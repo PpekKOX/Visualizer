@@ -1,0 +1,131 @@
+{
+	"name": "Quick Sort",
+	"summary": "Picks a pivot, moves the smaller elements in front of it and sorts both sides of the pivot recursively.",
+	"description": [
+		"Quick Sort is a divide and conquer algorithm too, but it does its work before the recursive calls. It picks a pivot element (here the last element of the range) and partitions the range: all elements smaller than the pivot are moved to its left, all others end up on its right. After that the pivot is in its final position, and both sides are sorted recursively.",
+		"This version uses the Lomuto partition scheme. The index i marks the end of the part with elements smaller than the pivot, while j walks through the range. Whenever arr[j] is smaller than the pivot, the part grows by one and arr[j] is swapped into it. Finally the pivot is swapped right behind that part.",
+		"When the pivots split the ranges into similar halves, Quick Sort needs O(n log n) time and is usually faster in practice than other O(n log n) algorithms, because it works in place with very little overhead. With bad pivots, for example on an already sorted array, every partition only removes one element and the time grows to O(n²). Choosing a random pivot makes that very unlikely."
+	],
+	"complexity": { "best": "O(n log n)", "average": "O(n log n)", "worst": "O(n²)", "space": "O(log n)" },
+	"properties": [
+		{ "label": "Stable", "value": "No" },
+		{ "label": "In place", "value": "Yes" }
+	],
+	"code": {
+		"javascript": {
+			"lines": [
+				"function quickSort(arr, low, high) {",
+				"    if (low < high) {",
+				"        const p = partition(arr, low, high);",
+				"        quickSort(arr, low, p - 1);",
+				"        quickSort(arr, p + 1, high);",
+				"    }",
+				"",
+				"    return arr;",
+				"}",
+				"",
+				"function partition(arr, low, high) {",
+				"    const pivot = arr[high];",
+				"    let i = low - 1;",
+				"    for (let j = low; j < high; j++) {",
+				"        if (arr[j] < pivot) {",
+				"            i++;",
+				"            [arr[i], arr[j]] = [arr[j], arr[i]];",
+				"        }",
+				"    }",
+				"",
+				"    [arr[i + 1], arr[high]] = [arr[high], arr[i + 1]];",
+				"    return i + 1;",
+				"}"
+			],
+			"steps": {
+				"partitionCall": [3],
+				"sortLeft": [4],
+				"sortRight": [5],
+				"baseCase": [2, 8],
+				"done": [8],
+				"pickPivot": [12, 13],
+				"compare": [15],
+				"swap": [16, 17],
+				"placePivot": [21, 22]
+			}
+		},
+		"python": {
+			"lines": [
+				"def quick_sort(arr, low, high):",
+				"    if low < high:",
+				"        p = partition(arr, low, high)",
+				"        quick_sort(arr, low, p - 1)",
+				"        quick_sort(arr, p + 1, high)",
+				"",
+				"    return arr",
+				"",
+				"def partition(arr, low, high):",
+				"    pivot = arr[high]",
+				"    i = low - 1",
+				"    for j in range(low, high):",
+				"        if arr[j] < pivot:",
+				"            i += 1",
+				"            arr[i], arr[j] = arr[j], arr[i]",
+				"",
+				"    arr[i + 1], arr[high] = arr[high], arr[i + 1]",
+				"    return i + 1"
+			],
+			"steps": {
+				"partitionCall": [3],
+				"sortLeft": [4],
+				"sortRight": [5],
+				"baseCase": [2, 7],
+				"done": [7],
+				"pickPivot": [10, 11],
+				"compare": [13],
+				"swap": [14, 15],
+				"placePivot": [17, 18]
+			},
+			"identifiers": { "quickSort": "quick_sort" }
+		},
+		"java": {
+			"lines": [
+				"static int[] quickSort(int[] arr, int low, int high) {",
+				"    if (low < high) {",
+				"        int p = partition(arr, low, high);",
+				"        quickSort(arr, low, p - 1);",
+				"        quickSort(arr, p + 1, high);",
+				"    }",
+				"",
+				"    return arr;",
+				"}",
+				"",
+				"static int partition(int[] arr, int low, int high) {",
+				"    int pivot = arr[high];",
+				"    int i = low - 1;",
+				"    for (int j = low; j < high; j++) {",
+				"        if (arr[j] < pivot) {",
+				"            i++;",
+				"            int temp = arr[i];",
+				"            arr[i] = arr[j];",
+				"            arr[j] = temp;",
+				"        }",
+				"    }",
+				"",
+				"    int temp = arr[i + 1];",
+				"    arr[i + 1] = arr[high];",
+				"    arr[high] = temp;",
+				"",
+				"    return i + 1;",
+				"}"
+			],
+			"steps": {
+				"partitionCall": [3],
+				"sortLeft": [4],
+				"sortRight": [5],
+				"baseCase": [2, 8],
+				"done": [8],
+				"pickPivot": [12, 13],
+				"compare": [15],
+				"swap": [16, 17, 18, 19],
+				"placePivot": [23, 24, 25, 27]
+			}
+		}
+	}
+}

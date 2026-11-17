@@ -1,0 +1,8 @@
+[
+	{
+		"slug": "sortingAlgorithms",
+		"name": "Sorting Algorithms",
+		"description": "Algorithms that put the elements of a list into order. The classic starting point for seeing how an algorithm works step by step.",
+		"algorithms": ["bubblesort", "selectionsort", "insertionsort", "mergesort", "quicksort"]
+	}
+]

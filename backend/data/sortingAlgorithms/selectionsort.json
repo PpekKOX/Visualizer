@@ -1,0 +1,98 @@
+{
+	"name": "Selection Sort",
+	"summary": "Repeatedly finds the smallest remaining element and moves it to the front of the unsorted part.",
+	"description": [
+		"Selection Sort splits the array into a sorted part on the left and an unsorted part on the right. In every pass it scans the whole unsorted part to find its smallest element, and then swaps that element with the first unsorted one.",
+		"After pass i, the first i + 1 elements are in their final positions. Unlike Bubble Sort, Selection Sort makes at most n − 1 swaps, which helps when writing to memory is expensive.",
+		"The number of comparisons is always about n²/2, no matter what the input looks like, so it takes O(n²) time even for an already sorted array. The standard version is not stable: a swap can move an element past another element with the same value."
+	],
+	"complexity": { "best": "O(n²)", "average": "O(n²)", "worst": "O(n²)", "space": "O(1)" },
+	"properties": [
+		{ "label": "Stable", "value": "No" },
+		{ "label": "In place", "value": "Yes" }
+	],
+	"code": {
+		"javascript": {
+			"lines": [
+				"function selectionSort(arr) {",
+				"    const n = arr.length;",
+				"    for (let i = 0; i < n - 1; i++) {",
+				"        let minIndex = i;",
+				"        for (let j = i + 1; j < n; j++) {",
+				"            if (arr[j] < arr[minIndex]) {",
+				"                minIndex = j;",
+				"            }",
+				"        }",
+				"        if (minIndex !== i) {",
+				"            [arr[i], arr[minIndex]] = [arr[minIndex], arr[i]];",
+				"        }",
+				"    }",
+				"    return arr;",
+				"}"
+			],
+			"steps": {
+				"init": [2],
+				"outerLoop": [3, 4],
+				"compare": [6],
+				"newMin": [7],
+				"swap": [10, 11],
+				"noSwap": [10],
+				"done": [14]
+			}
+		},
+		"python": {
+			"lines": [
+				"def selection_sort(arr):",
+				"    n = len(arr)",
+				"    for i in range(n - 1):",
+				"        min_index = i",
+				"        for j in range(i + 1, n):",
+				"            if arr[j] < arr[min_index]:",
+				"                min_index = j",
+				"        if min_index != i:",
+				"            arr[i], arr[min_index] = arr[min_index], arr[i]",
+				"    return arr"
+			],
+			"steps": {
+				"init": [2],
+				"outerLoop": [3, 4],
+				"compare": [6],
+				"newMin": [7],
+				"swap": [8, 9],
+				"noSwap": [8],
+				"done": [10]
+			},
+			"identifiers": { "minIndex": "min_index" }
+		},
+		"java": {
+			"lines": [
+				"static int[] selectionSort(int[] arr) {",
+				"    int n = arr.length;",
+				"    for (int i = 0; i < n - 1; i++) {",
+				"        int minIndex = i;",
+				"        for (int j = i + 1; j < n; j++) {",
+				"            if (arr[j] < arr[minIndex]) {",
+				"                minIndex = j;",
+				"            }",
+				"        }",
+				"        if (minIndex != i) {",
+				"            int temp = arr[i];",
+				"            arr[i] = arr[minIndex];",
+				"            arr[minIndex] = temp;",
+				"        }",
+				"    }",
+				"    return arr;",
+				"}"
+			],
+			"steps": {
+				"init": [2],
+				"outerLoop": [3, 4],
+				"compare": [6],
+				"newMin": [7],
+				"swap": [10, 11, 12, 13],
+				"noSwap": [10],
+				"done": [16]
+			}
+		}
+	}
+}

@@ -1,0 +1,96 @@
+{
+	"name": "Bubble Sort",
+	"summary": "Repeatedly walks through the array and swaps neighbouring elements that are in the wrong order.",
+	"description": [
+		"Bubble Sort walks through the array from left to right and compares every pair of neighbouring elements. Whenever the left element is bigger than the right one, the two are swapped. After the first pass the largest element has \"bubbled up\" to the very end of the array.",
+		"Every following pass does the same for the part that is still unsorted, so the sorted section at the end grows by one element per pass. If a whole pass finishes without a single swap, the array is already sorted and the algorithm stops early.",
+		"Bubble Sort is easy to understand but slow: in the worst case it needs about n²/2 comparisons. It is mostly used for teaching, or for tiny arrays that are nearly sorted."
+	],
+	"complexity": { "best": "O(n)", "average": "O(n²)", "worst": "O(n²)", "space": "O(1)" },
+	"properties": [
+		{ "label": "Stable", "value": "Yes" },
+		{ "label": "In place", "value": "Yes" }
+	],
+	"code": {
+		"javascript": {
+			"lines": [
+				"function bubbleSort(arr) {",
+				"    const n = arr.length;",
+				"    for (let i = 0; i < n - 1; i++) {",
+				"        let swapped = false;",
+				"        for (let j = 0; j < n - i - 1; j++) {",
+				"            if (arr[j] > arr[j + 1]) {",
+				"                [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];",
+				"                swapped = true;",
+				"            }",
+				"        }",
+				"        if (!swapped) break;",
+				"    }",
+				"    return arr;",
+				"}"
+			],
+			"steps": {
+				"init": [2],
+				"outerLoop": [3, 4],
+				"compare": [6],
+				"swap": [7, 8],
+				"checkSwapped": [11],
+				"earlyExit": [11],
+				"done": [13]
+			}
+		},
+		"python": {
+			"lines": [
+				"def bubble_sort(arr):",
+				"    n = len(arr)",
+				"    for i in range(n - 1):",
+				"        swapped = False",
+				"        for j in range(n - i - 1):",
+				"            if arr[j] > arr[j + 1]:",
+				"                arr[j], arr[j + 1] = arr[j + 1], arr[j]",
+				"                swapped = True",
+				"        if not swapped:",
+				"            break",
+				"    return arr"
+			],
+			"steps": {
+				"init": [2],
+				"outerLoop": [3, 4],
+				"compare": [6],
+				"swap": [7, 8],
+				"checkSwapped": [9],
+				"earlyExit": [9, 10],
+				"done": [11]
+			}
+		},
+		"java": {
+			"lines": [
+				"static int[] bubbleSort(int[] arr) {",
+				"    int n = arr.length;",
+				"    for (int i = 0; i < n - 1; i++) {",
+				"        boolean swapped = false;",
+				"        for (int j = 0; j < n - i - 1; j++) {",
+				"            if (arr[j] > arr[j + 1]) {",
+				"                int temp = arr[j];",
+				"                arr[j] = arr[j + 1];",
+				"                arr[j + 1] = temp;",
+				"                swapped = true;",
+				"            }",
+				"        }",
+				"        if (!swapped) break;",
+				"    }",
+				"    return arr;",
+				"}"
+			],
+			"steps": {
+				"init": [2],
+				"outerLoop": [3, 4],
+				"compare": [6],
+				"swap": [7, 8, 9, 10],
+				"checkSwapped": [13],
+				"earlyExit": [13],
+				"done": [15]
+			}
+		}
+	}
+}
