@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+@layer components {
+	.card {
+		@apply rounded-xl border border-slate-800 bg-slate-900/60;
+	}
+
+	.button {
+		@apply inline-flex items-center justify-center gap-2 rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-700 focus-visible:outline-2 focus-visible:outline-sky-400 disabled:pointer-events-none disabled:opacity-40;
+	}
+
+	.code-line {
+		@apply flex border-l-2 border-transparent pr-4 transition-colors;
+	}
+
+	.code-line.is-active {
+		@apply border-sky-400 bg-sky-400/15;
+	}
+}
