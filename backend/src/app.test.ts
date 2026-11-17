@@ -17,6 +17,8 @@ describe("API", () => {
 			"bubblesort",
 			"selectionsort",
 			"insertionsort",
+			"mergesort",
+			"quicksort",
 		]);
 	});
 
@@ -46,11 +48,12 @@ describe("algorithm data", () => {
 
 		for (const snippet of snippets) {
 			expect(Object.keys(snippet!.steps).sort()).toEqual(stepKeys);
-			for (const lines of Object.values(snippet!.steps)) {
+			for (const [step, lines] of Object.entries(snippet!.steps)) {
 				expect(lines.length).toBeGreaterThan(0);
 				for (const line of lines) {
 					expect(line).toBeGreaterThanOrEqual(1);
 					expect(line).toBeLessThanOrEqual(snippet!.lines.length);
+					expect(snippet!.lines[line - 1], `step "${step}" points to line ${line}, which has no code`).toMatch(/[^\s}]/);
 				}
 			}
 		}
