@@ -1,0 +1,21 @@
+{
+	"name": "visualizer",
+	"private": true,
+	"type": "module",
+	"workspaces": [
+		"shared",
+		"backend",
+		"frontend"
+	],
+	"scripts": {
+		"dev": "concurrently -n backend,frontend -c blue,magenta \"npm run dev -w backend\" \"npm run dev -w frontend\"",
+		"build": "npm run build -w backend && npm run build -w frontend",
+		"start": "npm run start -w backend",
+		"test": "npm test --workspaces --if-present",
+		"typecheck": "npm run typecheck --workspaces --if-present"
+	},
+	"devDependencies": {
+		"concurrently": "^10.0.7",
+		"typescript": "^7.0.2"
+	}
+}
