@@ -3,7 +3,7 @@ export type LanguageId = "javascript" | "python" | "java";
 export interface CodeSnippet {
 	lines: string[];
 	steps: Record<string, number[]>;
-	variableNames?: Record<string, string>;
+	identifiers?: Record<string, string>;
 }
 
 export interface Complexity {
