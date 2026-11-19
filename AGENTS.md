@@ -15,3 +15,4 @@ Visualizer is an Open-Source Web-Application with the sole purpose of visualizin
 - When creating a new function or system follow the rules of SRP & OCP.
 - If a task has open questions or the instructions were unclear, ask questions instead of guessing what the proper solution should look like.
 - Always test the code before applying it.
+- When adding new features / changing existing ones always make sure to adjust docs.md / README.md.
