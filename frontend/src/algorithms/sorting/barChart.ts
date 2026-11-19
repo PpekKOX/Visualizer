@@ -9,10 +9,14 @@ const HIGHLIGHTS: { key: SortHighlight; label: string; color: string }[] = [
 	{ key: "sorted", label: "Sorted", color: "bg-emerald-500" },
 ];
 const IDLE_COLOR = "bg-sky-500";
-const BAR_CLASS = "absolute inset-x-0 bottom-0 rounded-t-md transition-[height,background-color] duration-200";
+const BAR_CLASS = "absolute inset-x-0 bottom-0 rounded-t-md transition-[height,background-color,opacity] duration-200";
 
 function barColor(state: SortState, index: number): string {
 	return HIGHLIGHTS.find(({ key }) => state[key].includes(index))?.color ?? IDLE_COLOR;
+}
+
+function isOutsideRange(state: SortState, index: number): boolean {
+	return state.range !== null && (index < state.range[0] || index > state.range[1]);
 }
 
 export class BarChart implements Visualizer<SortState> {
@@ -37,7 +41,7 @@ export class BarChart implements Visualizer<SortState> {
 		const max = Math.max(...state.array, 1);
 		state.array.forEach((value, index) => {
 			const bar = this.bars[index];
-			bar.className = `${BAR_CLASS} ${barColor(state, index)}`;
+			bar.className = `${BAR_CLASS} ${barColor(state, index)} ${isOutsideRange(state, index) ? "opacity-25" : ""}`;
 			bar.style.height = `${(value / max) * 100}%`;
 			bar.firstElementChild!.textContent = String(value);
 		});
