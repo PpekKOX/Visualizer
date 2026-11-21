@@ -1,3 +1,5 @@
+import { createGraphModule } from "./graph/graphModule";
+import { topologicalSort, topologicalSortActions } from "./graph/topologicalSort";
 import { bubbleSort } from "./sorting/bubbleSort";
 import { insertionSort } from "./sorting/insertionSort";
 import { mergeSort } from "./sorting/mergeSort";
@@ -12,6 +14,7 @@ const modules = new Map<string, AlgorithmModule>([
 	["sortingAlgorithms/insertionsort", createSortingModule(insertionSort)],
 	["sortingAlgorithms/mergesort", createSortingModule(mergeSort)],
 	["sortingAlgorithms/quicksort", createSortingModule(quickSort)],
+	["graphAlgorithms/topologicalsort", createGraphModule(topologicalSort, topologicalSortActions)],
 ]);
 
 export function getAlgorithmModule(category: string, slug: string): AlgorithmModule | undefined {

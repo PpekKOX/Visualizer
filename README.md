@@ -30,15 +30,16 @@ It is built for visual learners and for anyone who wants to really see an algori
 
 ## Algorithms
 
-| Category | Algorithm      | Average time | Extra space |
-| -------- | -------------- | ------------ | ----------- |
-| Sorting  | Bubble Sort    | O(n²)        | O(1)        |
-| Sorting  | Selection Sort | O(n²)        | O(1)        |
-| Sorting  | Insertion Sort | O(n²)        | O(1)        |
-| Sorting  | Merge Sort     | O(n log n)   | O(n)        |
-| Sorting  | Quick Sort     | O(n log n)   | O(log n)    |
+| Category | Algorithm        | Average time | Extra space |
+| -------- | ---------------- | ------------ | ----------- |
+| Sorting  | Bubble Sort      | O(n²)        | O(1)        |
+| Sorting  | Selection Sort   | O(n²)        | O(1)        |
+| Sorting  | Insertion Sort   | O(n²)        | O(1)        |
+| Sorting  | Merge Sort       | O(n log n)   | O(n)        |
+| Sorting  | Quick Sort       | O(n log n)   | O(log n)    |
+| Graph    | Topological Sort | O(V + E)     | O(V)        |
 
-More categories, such as path-finding algorithms, are planned.
+More algorithms, such as path-finding, are planned.
 
 ## Getting started
 

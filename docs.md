@@ -73,13 +73,25 @@ and `trace.return()`. Each recorded step then also carries:
 
 The `variables` of a step always belong to the innermost call.
 
+### Graph algorithms
+
+A `Graph` (`graph/graphState.ts`) has nodes with a label and a position, and edges as pairs of node indices.
+`randomGraph()` (`graph/graphModule.ts`) shuffles the labels A–G over a fixed layout of four columns and only
+adds edges from one column to the next, so every graph is acyclic and easy to read. `GraphView` draws it as
+SVG: the node colours show the queue, the current node and the order, the small badge shows the in-degree and
+the edge in focus is red. Below the graph it lists the queue and the order.
+
+Topological Sort (Kahn's algorithm) records its steps with a small local `record` helper that takes a snapshot
+of the in-degrees, the queue, the order and the removed edges.
+
 ### Sound
 
 Every time the shown step changes, the page asks the module what the step does (`actionOf(step)`:
 `compare`, `write`, `select` or `other`) and `Sound` (`frontend/src/sound.ts`) plays the matching effect.
 The last step plays a short melody instead. Changing the language, pausing or randomizing is silent.
 Sorting derives the action from the step's highlights (`sortAction` in `sorting/sortingModule.ts`), so a new
-sorting algorithm gets sounds without extra work. The sounds are generated with the Web Audio API, the volume
+sorting algorithm gets sounds without extra work. Graph algorithms pass a map from step key to action to
+`createGraphModule` (e.g. `topologicalSortActions`). The sounds are generated with the Web Audio API, the volume
 and the mute state are saved in `localStorage`.
 
 ### Home page
@@ -105,8 +117,9 @@ JetBrains Mono for code (`font-mono`). Ligatures are turned off for code, so `==
 2. **Step generator**: add a function to `frontend/src/algorithms/<category>/` that returns the recorded
 	steps. For sorting, use `SortTracer` and call `trace.record(stepKey, message, variables, highlights)`
 	exactly where the corresponding code line runs. Recursive algorithms also use `trace.call` / `trace.return`
-	(see above).
-3. **Register** it in `frontend/src/algorithms/registry.ts` under `"<category>/<slug>"`.
+	(see above). For graphs, return `GraphStep[]` (see `graph/topologicalSort.ts`).
+3. **Register** it in `frontend/src/algorithms/registry.ts` under `"<category>/<slug>"`, with
+	`createSortingModule(sort)` or `createGraphModule(run, actions)`.
 4. Run `npm test`. The tests check that:
 	- every line number in the JSON exists and all languages share the same step keys (backend),
 	- every step key the generator emits exists in every language (`registry.test.ts`),
@@ -122,7 +135,8 @@ The URL is `/<category>/<slug>`, e.g. `/sortingAlgorithms/bubblesort`.
 Create a new folder in `frontend/src/algorithms/` with its own state type, a tracer or step helper, and a
 class implementing `Visualizer<TState>` (`element` + `render(state)`, with a compact variant for the home
 page). Wrap them in an `AlgorithmModule`
-together with an `actionOf(step)` function for the sounds (see `sorting/sortingModule.ts`) and register the
+together with an `actionOf(step)` function for the sounds (see `sorting/sortingModule.ts` or
+`graph/graphModule.ts`) and register the
 algorithms. The page, player, code panel and variables
 panel need no changes.
 
