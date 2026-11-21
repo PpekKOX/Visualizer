@@ -22,6 +22,6 @@ export interface Visualizer<TState> {
 
 export interface AlgorithmModule<TState = unknown> {
 	generateSteps(): Step<TState>[];
-	createVisualizer(): Visualizer<TState>;
+	createVisualizer(compact?: boolean): Visualizer<TState>;
 	actionOf(step: Step<TState>): StepAction;
 }

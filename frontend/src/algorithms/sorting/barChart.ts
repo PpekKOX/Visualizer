@@ -24,13 +24,16 @@ export class BarChart implements Visualizer<SortState> {
 	private readonly container: HTMLElement;
 	private bars: HTMLElement[] = [];
 
-	constructor() {
+	constructor(private readonly compact = false) {
+		const legend = `
+			<ul class="mt-4 flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs text-slate-400">
+				${HIGHLIGHTS.map(({ label, color }) => `<li class="flex items-center gap-2"><span class="h-3 w-3 rounded-sm ${color}"></span>${label}</li>`).join("")}
+			</ul>`;
+
 		this.element = fromHtml(`
-			<div>
-				<div class="flex h-56 gap-1 pt-6 sm:h-72 sm:gap-2" data-slot="bars"></div>
-				<ul class="mt-4 flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs text-slate-400">
-					${HIGHLIGHTS.map(({ label, color }) => `<li class="flex items-center gap-2"><span class="h-3 w-3 rounded-sm ${color}"></span>${label}</li>`).join("")}
-				</ul>
+			<div class="${compact ? "h-full" : ""}">
+				<div class="flex ${compact ? "h-full gap-1" : "h-56 gap-1 pt-6 sm:h-72 sm:gap-2"}" data-slot="bars"></div>
+				${compact ? "" : legend}
 			</div>`);
 		this.container = slot(this.element, "bars");
 	}
@@ -48,14 +51,16 @@ export class BarChart implements Visualizer<SortState> {
 	}
 
 	private createBars(count: number): void {
+		const labels = this.compact ? "hidden" : "";
+
 		this.container.innerHTML = Array.from(
 			{ length: count },
 			(_, index) => `
 				<div class="flex flex-1 flex-col items-center gap-1">
 					<div class="relative w-full flex-1">
-						<div data-bar><span class="absolute inset-x-0 -top-5 text-center text-xs font-medium tabular-nums text-slate-200"></span></div>
+						<div data-bar><span class="absolute inset-x-0 -top-5 text-center text-xs font-medium tabular-nums text-slate-200 ${labels}"></span></div>
 					</div>
-					<span class="text-[10px] tabular-nums text-slate-500">${index}</span>
+					<span class="text-[10px] tabular-nums text-slate-500 ${labels}">${index}</span>
 				</div>`,
 		).join("");
 		this.bars = [...this.container.querySelectorAll<HTMLElement>("[data-bar]")];

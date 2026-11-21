@@ -19,7 +19,7 @@ export function sortAction({ line, state }: SortStep): StepAction {
 export function createSortingModule(sort: (input: number[]) => SortStep[]): AlgorithmModule<SortState> {
 	return {
 		generateSteps: () => sort(randomArray(ARRAY_SIZE)),
-		createVisualizer: () => new BarChart(),
+		createVisualizer: (compact) => new BarChart(compact),
 		actionOf: sortAction,
 	};
 }
