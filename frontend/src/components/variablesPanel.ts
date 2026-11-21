@@ -3,6 +3,11 @@ import type { CallFrame, Step, VariableValue } from "../algorithms/types";
 import { escapeHtml, fromHtml, slot } from "../dom";
 import { formatValue } from "../languages";
 
+export function hasChanged(name: string, step: Step<unknown>, previous: Step<unknown> | undefined, language: LanguageId): boolean {
+	const previousValue = previous?.variables[name];
+	return previousValue === undefined || formatValue(previousValue, language) !== formatValue(step.variables[name], language);
+}
+
 export class VariablesPanel {
 	readonly element: HTMLElement;
 	private readonly callStack: HTMLElement;
@@ -25,9 +30,7 @@ export class VariablesPanel {
 	render(step: Step<unknown>, previous: Step<unknown> | undefined, language: LanguageId, identifiers: Record<string, string> = {}): void {
 		const format = (value: VariableValue) => formatValue(value, language);
 		const rows = Object.entries(step.variables).map(([name, value]) => {
-			const previousValue = previous?.variables[name];
-			const changed = previousValue === undefined || format(previousValue) !== format(value);
-			const style = changed ? "bg-amber-400/15 text-amber-300" : "text-white";
+			const style = hasChanged(name, step, previous, language) ? "bg-amber-400/15 text-amber-300" : "text-white";
 
 			return `
 				<div class="flex items-start justify-between gap-4 px-4 py-1.5">
