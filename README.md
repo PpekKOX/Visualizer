@@ -80,8 +80,7 @@ drives the highlighting in every language. [docs.md](docs.md) explains the archi
 
 ## Contributing
 
-Contributions are welcome! The most common one is a new algorithm, and
-[docs.md](docs.md#adding-an-algorithm) walks you through it step by step.
+Contributions are welcome! [docs.md](docs.md#adding-an-algorithm) will walk you through the `how` step by step.
 
 Before opening a pull request, please run `npm test` and `npm run typecheck`.
 The code style uses tabs with a width of 4 (see [.editorconfig](.editorconfig)).
