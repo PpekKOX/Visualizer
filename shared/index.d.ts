@@ -22,6 +22,7 @@ export interface AlgorithmSummary {
 	slug: string;
 	name: string;
 	summary: string;
+	complexity: Complexity;
 }
 
 export interface CategorySummary {
@@ -34,7 +35,6 @@ export interface CategorySummary {
 export interface AlgorithmDetails extends AlgorithmSummary {
 	category: { slug: string; name: string };
 	description: string[];
-	complexity: Complexity;
 	properties: AlgorithmProperty[];
 	code: Partial<Record<LanguageId, CodeSnippet>>;
 }
