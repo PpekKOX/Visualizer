@@ -33,7 +33,7 @@ export function loadAlgorithmRepository(dataDir: string): AlgorithmRepository {
 			const details: AlgorithmDetails = { slug, category: { slug: entry.slug, name: entry.name }, ...file };
 			algorithms.set(`${entry.slug}/${slug}`, details);
 			
-			return { slug, name: details.name, summary: details.summary };
+			return { slug, name: details.name, summary: details.summary, complexity: details.complexity };
 		}),
 	}));
 
