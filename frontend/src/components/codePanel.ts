@@ -11,6 +11,19 @@ hljs.registerLanguage("javascript", javascript);
 hljs.registerLanguage("python", python);
 hljs.registerLanguage("java", java);
 
+export function codeLinesHtml(lines: string[], language: LanguageId): string {
+	return lines
+		.map((line, index) => {
+			const highlighted = hljs.highlight(line, { language, ignoreIllegals: true }).value;
+			return `<div class="code-line"><span class="w-10 shrink-0 pr-4 text-right text-slate-600 select-none">${index + 1}</span><span class="whitespace-pre">${highlighted || " "}</span></div>`;
+		})
+		.join("");
+}
+
+export function markActiveLines(lines: HTMLElement[], active: number[] = []): void {
+	lines.forEach((line, index) => line.classList.toggle("is-active", active.includes(index + 1)));
+}
+
 export class CodePanel {
 	readonly element: HTMLElement;
 	private readonly tabs: HTMLElement;
@@ -46,8 +59,7 @@ export class CodePanel {
 
 	highlight(stepKey: string): void {
 		this.stepKey = stepKey;
-		const active = new Set(this.code[this.language]?.steps[stepKey] ?? []);
-		this.lines.forEach((line, index) => line.classList.toggle("is-active", active.has(index + 1)));
+		markActiveLines(this.lines, this.code[this.language]?.steps[stepKey]);
 	}
 
 	private selectLanguage(language: LanguageId): void {
@@ -69,13 +81,7 @@ export class CodePanel {
 			})
 			.join("");
 
-		const source = this.code[this.language]?.lines ?? [];
-		this.body.innerHTML = source
-			.map((line, index) => {
-				const highlighted = hljs.highlight(line, { language: this.language, ignoreIllegals: true }).value;
-				return `<div class="code-line"><span class="w-10 shrink-0 pr-4 text-right text-slate-600 select-none">${index + 1}</span><span class="whitespace-pre">${highlighted || " "}</span></div>`;
-			})
-			.join("");
+		this.body.innerHTML = codeLinesHtml(this.code[this.language]?.lines ?? [], this.language);
 		this.lines = [...this.body.children] as HTMLElement[];
 		this.highlight(this.stepKey);
 	}
