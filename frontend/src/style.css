@@ -1,8 +1,29 @@
 @import "tailwindcss";
 
+@theme {
+	--font-display: "Space Grotesk Variable", ui-sans-serif, system-ui, sans-serif;
+	--font-mono: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+@layer base {
+	body {
+		background:
+			radial-gradient(56rem 28rem at 10% -6rem, rgb(14 165 233 / 0.14), transparent 70%),
+			radial-gradient(48rem 26rem at 90% -6rem, rgb(139 92 246 / 0.12), transparent 70%),
+			radial-gradient(rgb(148 163 184 / 0.13) 1px, transparent 1px) 0 0 / 24px 24px,
+			var(--color-slate-950);
+	}
+
+	h1,
+	h2,
+	h3 {
+		font-family: var(--font-display);
+	}
+}
+
 @layer components {
 	.card {
-		@apply rounded-xl border border-slate-800 bg-slate-900/60;
+		@apply rounded-xl border border-slate-800 bg-linear-to-b from-slate-900/90 to-slate-900/60 shadow-lg inset-shadow-2xs shadow-black/20 inset-shadow-white/5;
 	}
 
 	.button {

@@ -1,3 +1,5 @@
+import "@fontsource-variable/jetbrains-mono";
+import "@fontsource-variable/space-grotesk";
 import "./style.css";
 import { algorithmPage } from "./pages/algorithmPage";
 import { homePage } from "./pages/homePage";
