@@ -95,7 +95,7 @@ A compact visualizer (`createVisualizer(true)`) has no labels or legend and take
 
 Tailwind CSS with a few shared classes in `frontend/src/style.css` (`.card`, `.button`, `.code-line`). The
 fonts are self-hosted with Fontsource (imported in `main.ts`): Space Grotesk for headings (`font-display`) and
-JetBrains Mono for code (`font-mono`).
+JetBrains Mono for code (`font-mono`). Ligatures are turned off for code, so `===` and `<=` look exactly as typed.
 
 ## Adding an algorithm
 

@@ -3,6 +3,7 @@
 @theme {
 	--font-display: "Space Grotesk Variable", ui-sans-serif, system-ui, sans-serif;
 	--font-mono: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+	--font-mono--font-feature-settings: "liga" 0, "calt" 0;
 }
 
 @layer base {
