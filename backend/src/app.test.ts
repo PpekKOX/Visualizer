@@ -20,6 +20,7 @@ describe("API", () => {
 			"mergesort",
 			"quicksort",
 		]);
+		expect(response.body[0].algorithms[0].complexity.average).toBe("O(n²)");
 	});
 
 	it("returns algorithm details", async () => {
