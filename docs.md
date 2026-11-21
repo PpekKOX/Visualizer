@@ -44,7 +44,8 @@ The frontend runs the algorithm once and records every step up front. A step is:
 ```
 
 - `state` is drawn by the category's visualizer (e.g. the bar chart for sorting).
-- `variables` fill the variables panel. Values that differ from the previous step are highlighted.
+- `variables` fill the variables panel. Values that differ from the previous step are highlighted. A value can
+	be a number, a string, a boolean, a list or a map of numbers (like `inDegree` in Topological Sort).
 - `line` is a language-independent **step key**. Each language's code in the JSON maps step keys to the
 	1-based line numbers that run during that step:
 

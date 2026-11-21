@@ -1,4 +1,4 @@
-export type VariableValue = number | string | boolean | number[];
+export type VariableValue = number | string | boolean | number[] | string[] | Record<string, number>;
 export type Variables = Record<string, VariableValue>;
 export type StepAction = "compare" | "write" | "select" | "other";
 

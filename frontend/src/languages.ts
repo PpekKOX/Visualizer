@@ -12,6 +12,7 @@ export const LANGUAGE_LABELS: Record<LanguageId, string> = {
 
 export function formatValue(value: VariableValue, language: LanguageId): string {
 	if (Array.isArray(value)) return `[${value.join(", ")}]`;
+	if (typeof value === "object") return `{${Object.entries(value).map(([key, item]) => `${key}: ${item}`).join(", ")}}`;
 	if (typeof value === "boolean" && language === "python") return value ? "True" : "False";
 
 	return String(value);
