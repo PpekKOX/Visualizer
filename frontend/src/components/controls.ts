@@ -1,4 +1,4 @@
-import { fromHtml, slot } from "../dom";
+import { fromHtml, slot, svgIcon } from "../dom";
 import type { Player } from "../player";
 import type { Sound } from "../sound";
 
@@ -22,16 +22,12 @@ const ICONS = {
 	muted: '<path d="M11 5L6 9H3v6h3l5 4z" fill="currentColor" /><path d="M22 9l-6 6M16 9l6 6" />',
 };
 
-function icon(path: string): string {
-	return `<svg viewBox="0 0 24 24" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${path}</svg>`;
-}
-
 function iconButton(name: keyof typeof ICONS, label: string, extraClass = ""): string {
-	return `<button type="button" class="button px-2.5 ${extraClass}" data-slot="${name}" title="${label}" aria-label="${label}">${icon(ICONS[name])}</button>`;
+	return `<button type="button" class="button px-2.5 ${extraClass}" data-slot="${name}" title="${label}" aria-label="${label}">${svgIcon(ICONS[name])}</button>`;
 }
 
 function setIconButton(button: HTMLButtonElement, path: string, label: string): void {
-	button.innerHTML = icon(path);
+	button.innerHTML = svgIcon(path);
 	button.title = label;
 	button.setAttribute("aria-label", label);
 }
