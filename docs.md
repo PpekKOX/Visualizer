@@ -124,7 +124,8 @@ JetBrains Mono for code (`font-mono`). Ligatures are turned off for code, so `==
 	- every line number in the JSON exists and all languages share the same step keys (backend),
 	- every step key the generator emits exists in every language (`registry.test.ts`),
 	- the generator really sorts and only changes the array on write steps (`sorting.test.ts`),
-	- recursive generators keep the call stack and the highlighted range in sync (`sorting.test.ts`).
+	- recursive generators keep the call stack and the highlighted range in sync (`sorting.test.ts`),
+	- random graphs never have a cycle and Topological Sort returns a valid order (`graph.test.ts`).
 
 It is also worth running the code snippets themselves once in each language before adding them.
 

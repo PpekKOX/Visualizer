@@ -21,6 +21,8 @@ describe("API", () => {
 			"quicksort",
 		]);
 		expect(response.body[0].algorithms[0].complexity.average).toBe("O(n²)");
+		expect(response.body[1].slug).toBe("graphAlgorithms");
+		expect(response.body[1].algorithms.map((a: { slug: string }) => a.slug)).toEqual(["topologicalsort"]);
 	});
 
 	it("returns algorithm details", async () => {
