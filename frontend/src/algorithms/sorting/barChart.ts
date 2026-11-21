@@ -1,4 +1,5 @@
 import { fromHtml, slot } from "../../dom";
+import { legendHtml } from "../legend";
 import type { Visualizer } from "../types";
 import type { SortHighlight, SortState } from "./sortTracer";
 
@@ -25,15 +26,10 @@ export class BarChart implements Visualizer<SortState> {
 	private bars: HTMLElement[] = [];
 
 	constructor(private readonly compact = false) {
-		const legend = `
-			<ul class="mt-4 flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs text-slate-400">
-				${HIGHLIGHTS.map(({ label, color }) => `<li class="flex items-center gap-2"><span class="h-3 w-3 rounded-sm ${color}"></span>${label}</li>`).join("")}
-			</ul>`;
-
 		this.element = fromHtml(`
 			<div class="${compact ? "h-full" : ""}">
 				<div class="flex ${compact ? "h-full gap-1" : "h-56 gap-1 pt-6 sm:h-72 sm:gap-2"}" data-slot="bars"></div>
-				${compact ? "" : legend}
+				${compact ? "" : legendHtml(HIGHLIGHTS)}
 			</div>`);
 		this.container = slot(this.element, "bars");
 	}
