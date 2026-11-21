@@ -62,6 +62,7 @@ Then open <http://localhost:5173>. The API runs on port 3000 and Vite forwards `
 ## Tech stack
 
 - **Frontend** – TypeScript, Vite, Tailwind CSS and highlight.js, without a UI framework
+- **Fonts** – Space Grotesk and JetBrains Mono, self-hosted with Fontsource
 - **Backend** – Node.js, Express and TypeScript
 - **Tests** – Vitest and Supertest
 
