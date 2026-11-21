@@ -22,7 +22,7 @@ backend/     Express API (TypeScript)
 	src/     Repository (loads JSON), routes, app, server
 frontend/    Vanilla TypeScript + Vite + Tailwind CSS
 	src/algorithms/ Step generators and visualizers, grouped by category
-	src/components/ Code panel, variables panel, playback controls, algorithm info
+	src/components/ Code panel, variables panel, playback controls, algorithm info, live preview
 	src/pages/      Home, algorithm and message (404 / error) pages
 	src/router.ts   History API router (/:category/:algorithm)
 	src/player.ts   Step playback (play, pause, step, seek, speed)
@@ -81,6 +81,22 @@ Sorting derives the action from the step's highlights (`sortAction` in `sorting/
 sorting algorithm gets sounds without extra work. The sounds are generated with the Web Audio API, the volume
 and the mute state are saved in `localStorage`.
 
+### Home page
+
+The home page reuses the same building blocks:
+
+- the **live preview** (`components/livePreview.ts`) plays Bubble Sort in a loop with a compact visualizer,
+	the real code from the JSON and its variables. With `prefers-reduced-motion` it shows a single still step.
+- every **algorithm card** shows a compact snapshot of a random run at 40 % and its average time complexity.
+
+A compact visualizer (`createVisualizer(true)`) has no labels or legend and takes the height of its parent.
+
+### Styling
+
+Tailwind CSS with a few shared classes in `frontend/src/style.css` (`.card`, `.button`, `.code-line`). The
+fonts are self-hosted with Fontsource (imported in `main.ts`): Space Grotesk for headings (`font-display`) and
+JetBrains Mono for code (`font-mono`).
+
 ## Adding an algorithm
 
 1. **Data**: add `backend/data/<category>/<slug>.json` (copy an existing one) and list the slug in
@@ -103,7 +119,8 @@ The URL is `/<category>/<slug>`, e.g. `/sortingAlgorithms/bubblesort`.
 ## Adding a new category (e.g. path-finding)
 
 Create a new folder in `frontend/src/algorithms/` with its own state type, a tracer or step helper, and a
-class implementing `Visualizer<TState>` (`element` + `render(state)`). Wrap them in an `AlgorithmModule`
+class implementing `Visualizer<TState>` (`element` + `render(state)`, with a compact variant for the home
+page). Wrap them in an `AlgorithmModule`
 together with an `actionOf(step)` function for the sounds (see `sorting/sortingModule.ts`) and register the
 algorithms. The page, player, code panel and variables
 panel need no changes.
