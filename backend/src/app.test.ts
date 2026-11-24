@@ -22,8 +22,10 @@ describe("API", () => {
 			"heapsort",
 		]);
 		expect(response.body[0].algorithms[0].complexity.average).toBe("O(n²)");
-		expect(response.body[1].slug).toBe("graphAlgorithms");
-		expect(response.body[1].algorithms.map((a: { slug: string }) => a.slug)).toEqual(["topologicalsort"]);
+		expect(response.body[1].slug).toBe("searchingAlgorithms");
+		expect(response.body[1].algorithms.map((a: { slug: string }) => a.slug)).toEqual(["binarysearch"]);
+		expect(response.body[2].slug).toBe("graphAlgorithms");
+		expect(response.body[2].algorithms.map((a: { slug: string }) => a.slug)).toEqual(["topologicalsort"]);
 	});
 
 	it("returns algorithm details", async () => {
