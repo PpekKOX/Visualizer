@@ -8,6 +8,11 @@ describe("formatValue", () => {
 		expect(formatValue({ A: 0, B: 2 }, "python")).toBe("{A: 0, B: 2}");
 	});
 
+	it("writes infinity as ∞ in every language", () => {
+		expect(formatValue(Infinity, "java")).toBe("∞");
+		expect(formatValue({ A: 0, B: Infinity }, "python")).toBe("{A: 0, B: ∞}");
+	});
+
 	it("writes booleans the way the language does", () => {
 		expect(formatValue(true, "javascript")).toBe("true");
 		expect(formatValue(false, "python")).toBe("False");
