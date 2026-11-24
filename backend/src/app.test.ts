@@ -19,6 +19,7 @@ describe("API", () => {
 			"insertionsort",
 			"mergesort",
 			"quicksort",
+			"heapsort",
 		]);
 		expect(response.body[0].algorithms[0].complexity.average).toBe("O(n²)");
 		expect(response.body[1].slug).toBe("graphAlgorithms");

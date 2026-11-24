@@ -1,12 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { bubbleSort } from "./bubbleSort";
+import { heapSort } from "./heapSort";
 import { insertionSort } from "./insertionSort";
 import { mergeSort } from "./mergeSort";
 import { quickSort } from "./quickSort";
 import { selectionSort } from "./selectionSort";
 import { sortAction } from "./sortingModule";
 
-const WRITE_STEPS = new Set(["swap", "shift", "insert", "takeLeft", "takeRight", "copyLeft", "copyRight", "placePivot"]);
+const WRITE_STEPS = new Set(["swap", "shift", "insert", "takeLeft", "takeRight", "copyLeft", "copyRight", "placePivot", "extract"]);
 const INPUTS = [[], [7], [2, 1], [5, 1, 4, 2, 8], [3, 3, 1, 2, 2], [9, 8, 7, 6, 5, 4, 3, 2, 1], [1, 2, 3, 4, 5]];
 const ascending = (values: number[]) => [...values].sort((a, b) => a - b);
 
@@ -16,6 +17,7 @@ describe.each([
 	["insertionSort", insertionSort],
 	["mergeSort", mergeSort],
 	["quickSort", quickSort],
+	["heapSort", heapSort],
 ])("%s", (_name, sort) => {
 	it.each(INPUTS.map((input) => [input]))("sorts %j and marks every element as sorted", (input) => {
 		const steps = sort(input);
@@ -87,6 +89,24 @@ describe("algorithm specific behaviour", () => {
 	it("merge sort splits n - 1 times", () => {
 		const lines = mergeSort([9, 8, 7, 6, 5, 4, 3, 2, 1]).map((step) => step.line);
 		expect(countLines(lines, "split")).toBe(8);
+	});
+
+	it("heap sort builds a max heap before it takes out the largest element", () => {
+		const steps = heapSort([3, 9, 1, 7, 5, 8, 2, 6, 4]);
+		const heap = steps[steps.findIndex((step) => step.line === "extract") - 1].state.array;
+
+		heap.forEach((value, index) => {
+			if (index > 0) expect(heap[Math.floor((index - 1) / 2)]).toBeGreaterThanOrEqual(value);
+		});
+	});
+
+	it("heap sort extracts n - 1 times and dims everything outside the heap", () => {
+		const steps = heapSort([5, 1, 4, 2, 8, 3]);
+
+		expect(countLines(steps.map((step) => step.line), "extract")).toBe(5);
+		for (const step of steps.filter((current) => current.callStack!.at(-1)!.name === "heapify")) {
+			expect(step.state.range).toEqual([0, Number(step.callStack!.at(-1)!.args[1]) - 1]);
+		}
 	});
 
 	it("quick sort puts every pivot into its final position", () => {
