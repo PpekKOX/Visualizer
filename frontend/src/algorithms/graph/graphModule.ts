@@ -1,3 +1,4 @@
+import { randomItem, shuffled } from "../random";
 import type { AlgorithmModule, StepAction } from "../types";
 import type { Graph, GraphState, GraphStep } from "./graphState";
 import { GraphView } from "./graphView";
@@ -13,20 +14,6 @@ const LAYOUT = [
 	{ x: 90, y: 42, column: 2 },
 	{ x: 128, y: 28, column: 3 },
 ];
-
-function shuffled<T>(values: T[]): T[] {
-	const result = [...values];
-	for (let i = result.length - 1; i > 0; i--) {
-		const j = Math.floor(Math.random() * (i + 1));
-		[result[i], result[j]] = [result[j], result[i]];
-	}
-
-	return result;
-}
-
-function randomItem<T>(values: T[]): T {
-	return values[Math.floor(Math.random() * values.length)];
-}
 
 function nodesInColumn(column: number): number[] {
 	return LAYOUT.flatMap((position, index) => (position.column === column ? [index] : []));
