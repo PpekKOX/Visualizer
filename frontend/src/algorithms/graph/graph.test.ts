@@ -1,19 +1,22 @@
 import { describe, expect, it } from "vitest";
 import { breadthFirstSearch, breadthFirstSearchConfig } from "./breadthFirstSearch";
 import { depthFirstSearch, depthFirstSearchConfig } from "./depthFirstSearch";
+import { dijkstra, dijkstraConfig } from "./dijkstra";
 import { createGraphModule } from "./graphModule";
 import type { Graph, GraphStep } from "./graphState";
-import { randomDag, randomUndirectedGraph } from "./randomGraph";
+import { randomDag, randomUndirectedGraph, randomWeightedGraph } from "./randomGraph";
 import { topologicalSort, topologicalSortConfig } from "./topologicalSort";
 
 const dags = Array.from({ length: 200 }, randomDag);
 const undirectedGraphs = Array.from({ length: 200 }, randomUndirectedGraph);
+const weightedGraphs = Array.from({ length: 200 }, randomWeightedGraph);
 
-function graphOf(labels: string, edges: string[], directed = true): Graph {
+function graphOf(labels: string, edges: string[], directed = true, weights?: number[]): Graph {
 	return {
 		nodes: [...labels].map((label, index) => ({ label, x: index * 10, y: 0 })),
 		edges: edges.map(([from, to]) => [labels.indexOf(from), labels.indexOf(to)]),
 		directed,
+		weights,
 	};
 }
 
@@ -23,11 +26,12 @@ const startOf = (graph: Graph) => graph.nodes.findIndex((node) => node.label ===
 
 function shortestDistances(graph: Graph, start: number): number[] {
 	const dist = graph.nodes.map((_, node) => (node === start ? 0 : Infinity));
+	const weights = graph.weights ?? graph.edges.map(() => 1);
 
 	for (let round = 0; round < graph.nodes.length; round++) {
-		graph.edges.forEach(([a, b]) => {
-			dist[b] = Math.min(dist[b], dist[a] + 1);
-			dist[a] = Math.min(dist[a], dist[b] + 1);
+		graph.edges.forEach(([a, b], edge) => {
+			dist[b] = Math.min(dist[b], dist[a] + weights[edge]);
+			dist[a] = Math.min(dist[a], dist[b] + weights[edge]);
 		});
 	}
 
@@ -58,6 +62,13 @@ describe("random graphs", () => {
 			expect(graph.edges.length).toBeGreaterThanOrEqual(graph.nodes.length);
 			expect(edges.includes("0-3") && edges.includes("1-2")).toBe(false);
 			expect(edges.includes("2-5") && edges.includes("3-4")).toBe(false);
+		}
+	});
+
+	it("weighted: every edge has a weight from 1 to 9", () => {
+		for (const graph of weightedGraphs) {
+			expect(graph.weights).toHaveLength(graph.edges.length);
+			expect(graph.weights!.every((weight) => Number.isInteger(weight) && weight >= 1 && weight <= 9)).toBe(true);
 		}
 	});
 });
@@ -171,11 +182,47 @@ describe("depthFirstSearch", () => {
 	});
 });
 
+describe("dijkstra", () => {
+	it("finds the shortest distances through other nodes", () => {
+		const graph = graphOf("ABCD", ["AB", "AC", "BC", "CD"], false, [1, 4, 2, 1]);
+		const last = dijkstra(graph).at(-1)!;
+
+		expect(last.line).toBe("done");
+		expect(last.variables.dist).toEqual({ A: 0, B: 1, C: 3, D: 4 });
+		expect(last.state.treeEdges).toEqual([0, 2, 3]);
+	});
+
+	it("finds the shortest distance to every node and visits them from near to far", () => {
+		for (const graph of weightedGraphs) {
+			const steps = dijkstra(graph);
+			const { done: order, badges, treeEdges } = steps.at(-1)!.state;
+			const distance = shortestDistances(graph, startOf(graph));
+
+			expect(badges).toEqual(distance.map(String));
+			order.slice(1).forEach((node, index) => expect(distance[node]).toBeGreaterThanOrEqual(distance[order[index]]));
+			expect(treeEdges).toHaveLength(graph.nodes.length - 1);
+			for (const edge of treeEdges) {
+				const [a, b] = graph.edges[edge];
+				expect(Math.abs(distance[a] - distance[b])).toBe(graph.weights![edge]);
+			}
+		}
+	});
+
+	it("shows the distances of the variables in the badges", () => {
+		const graph = weightedGraphs[0];
+		for (const step of dijkstra(graph)) {
+			const dist = step.variables.dist as Record<string, number>;
+			expect(graph.nodes.map((node) => (dist[node.label] === Infinity ? "∞" : String(dist[node.label])))).toEqual(step.state.badges);
+		}
+	});
+});
+
 describe("graph modules", () => {
 	it.each([
 		["topologicalSort", topologicalSortConfig],
 		["breadthFirstSearch", breadthFirstSearchConfig],
 		["depthFirstSearch", depthFirstSearchConfig],
+		["dijkstra", dijkstraConfig],
 	] as const)("%s: every step key with a sound exists and gets its sound", (_name, config) => {
 		const module = createGraphModule(config);
 		const steps = Array.from({ length: 10 }, () => module.generateSteps()).flat();

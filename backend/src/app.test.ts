@@ -29,6 +29,7 @@ describe("API", () => {
 			"breadthfirstsearch",
 			"depthfirstsearch",
 			"topologicalsort",
+			"dijkstra",
 		]);
 	});
 
