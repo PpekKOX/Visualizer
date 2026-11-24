@@ -3,7 +3,13 @@ import { legendHtml } from "../legend";
 import type { Visualizer } from "../types";
 import type { SortHighlight, SortState } from "./sortTracer";
 
-const HIGHLIGHTS: { key: SortHighlight; label: string; color: string }[] = [
+export interface BarHighlight {
+	key: SortHighlight;
+	label: string;
+	color: string;
+}
+
+const SORT_HIGHLIGHTS: BarHighlight[] = [
 	{ key: "swapping", label: "Writing", color: "bg-rose-500" },
 	{ key: "comparing", label: "Comparing", color: "bg-amber-400" },
 	{ key: "marked", label: "Selected", color: "bg-violet-400" },
@@ -12,8 +18,8 @@ const HIGHLIGHTS: { key: SortHighlight; label: string; color: string }[] = [
 const IDLE_COLOR = "bg-sky-500";
 const BAR_CLASS = "absolute inset-x-0 bottom-0 rounded-t-md transition-[height,background-color,opacity] duration-200";
 
-function barColor(state: SortState, index: number): string {
-	return HIGHLIGHTS.find(({ key }) => state[key].includes(index))?.color ?? IDLE_COLOR;
+function barColor(highlights: BarHighlight[], state: SortState, index: number): string {
+	return highlights.find(({ key }) => state[key].includes(index))?.color ?? IDLE_COLOR;
 }
 
 function isOutsideRange(state: SortState, index: number): boolean {
@@ -25,11 +31,14 @@ export class BarChart implements Visualizer<SortState> {
 	private readonly container: HTMLElement;
 	private bars: HTMLElement[] = [];
 
-	constructor(private readonly compact = false) {
+	constructor(
+		private readonly compact = false,
+		private readonly highlights = SORT_HIGHLIGHTS,
+	) {
 		this.element = fromHtml(`
 			<div class="${compact ? "h-full" : ""}">
 				<div class="flex ${compact ? "h-full gap-1" : "h-56 gap-1 pt-6 sm:h-72 sm:gap-2"}" data-slot="bars"></div>
-				${compact ? "" : legendHtml(HIGHLIGHTS)}
+				${compact ? "" : legendHtml(highlights)}
 			</div>`);
 		this.container = slot(this.element, "bars");
 	}
@@ -40,7 +49,7 @@ export class BarChart implements Visualizer<SortState> {
 		const max = Math.max(...state.array, 1);
 		state.array.forEach((value, index) => {
 			const bar = this.bars[index];
-			bar.className = `${BAR_CLASS} ${barColor(state, index)} ${isOutsideRange(state, index) ? "opacity-25" : ""}`;
+			bar.className = `${BAR_CLASS} ${barColor(this.highlights, state, index)} ${isOutsideRange(state, index) ? "opacity-25" : ""}`;
 			bar.style.height = `${(value / max) * 100}%`;
 			bar.firstElementChild!.textContent = String(value);
 		});
