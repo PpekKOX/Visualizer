@@ -1,0 +1,94 @@
+{
+	"name": "Binary Search",
+	"summary": "Finds a value in a sorted array by halving the part that can still contain it.",
+	"description": [
+		"Binary Search looks for a value in a sorted array. It keeps two indices, low and high, around the part of the array that can still contain the target, and checks the element in the middle. If it is the target, the search is over. If it is smaller than the target, the target can only be on its right, so low moves past the middle. If it is larger, high moves before the middle.",
+		"Every check rules out half of the remaining elements, so Binary Search needs at most about log₂ n checks: 4 for the 15 elements here and only 20 for a million. A linear search may have to look at every single element. The catch is that the array has to be sorted.",
+		"The Java version computes the middle as low + (high − low) / 2. For very large arrays, low + high can be larger than the biggest int and overflow, a bug that went unnoticed in Java's own standard library for years."
+	],
+	"complexity": { "best": "O(1)", "average": "O(log n)", "worst": "O(log n)", "space": "O(1)" },
+	"properties": [
+		{ "label": "Input", "value": "Sorted array" },
+		{ "label": "Checks for a million elements", "value": "At most 20" }
+	],
+	"code": {
+		"javascript": {
+			"lines": [
+				"function binarySearch(arr, target) {",
+				"    let low = 0;",
+				"    let high = arr.length - 1;",
+				"    while (low <= high) {",
+				"        const mid = Math.floor((low + high) / 2);",
+				"        if (arr[mid] === target) {",
+				"            return mid;",
+				"        } else if (arr[mid] < target) {",
+				"            low = mid + 1;",
+				"        } else {",
+				"            high = mid - 1;",
+				"        }",
+				"    }",
+				"    return -1;",
+				"}"
+			],
+			"steps": {
+				"init": [2, 3],
+				"pickMiddle": [4, 5],
+				"found": [6, 7],
+				"goRight": [8, 9],
+				"goLeft": [10, 11],
+				"notFound": [14]
+			}
+		},
+		"python": {
+			"lines": [
+				"def binary_search(arr, target):",
+				"    low = 0",
+				"    high = len(arr) - 1",
+				"    while low <= high:",
+				"        mid = (low + high) // 2",
+				"        if arr[mid] == target:",
+				"            return mid",
+				"        elif arr[mid] < target:",
+				"            low = mid + 1",
+				"        else:",
+				"            high = mid - 1",
+				"    return -1"
+			],
+			"steps": {
+				"init": [2, 3],
+				"pickMiddle": [4, 5],
+				"found": [6, 7],
+				"goRight": [8, 9],
+				"goLeft": [10, 11],
+				"notFound": [12]
+			}
+		},
+		"java": {
+			"lines": [
+				"static int binarySearch(int[] arr, int target) {",
+				"    int low = 0;",
+				"    int high = arr.length - 1;",
+				"    while (low <= high) {",
+				"        int mid = low + (high - low) / 2;",
+				"        if (arr[mid] == target) {",
+				"            return mid;",
+				"        } else if (arr[mid] < target) {",
+				"            low = mid + 1;",
+				"        } else {",
+				"            high = mid - 1;",
+				"        }",
+				"    }",
+				"    return -1;",
+				"}"
+			],
+			"steps": {
+				"init": [2, 3],
+				"pickMiddle": [4, 5],
+				"found": [6, 7],
+				"goRight": [8, 9],
+				"goLeft": [10, 11],
+				"notFound": [14]
+			}
+		}
+	}
+}

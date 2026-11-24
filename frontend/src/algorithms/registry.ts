@@ -1,5 +1,7 @@
 import { createGraphModule } from "./graph/graphModule";
 import { topologicalSort, topologicalSortActions } from "./graph/topologicalSort";
+import { binarySearch, binarySearchActions } from "./searching/binarySearch";
+import { createSearchingModule } from "./searching/searchingModule";
 import { bubbleSort } from "./sorting/bubbleSort";
 import { heapSort } from "./sorting/heapSort";
 import { insertionSort } from "./sorting/insertionSort";
@@ -16,6 +18,7 @@ const modules = new Map<string, AlgorithmModule>([
 	["sortingAlgorithms/mergesort", createSortingModule(mergeSort)],
 	["sortingAlgorithms/quicksort", createSortingModule(quickSort)],
 	["sortingAlgorithms/heapsort", createSortingModule(heapSort)],
+	["searchingAlgorithms/binarysearch", createSearchingModule(binarySearch, binarySearchActions)],
 	["graphAlgorithms/topologicalsort", createGraphModule(topologicalSort, topologicalSortActions)],
 ]);
 

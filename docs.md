@@ -74,6 +74,13 @@ and `trace.return()`. Each recorded step then also carries:
 
 The `variables` of a step always belong to the innermost call.
 
+### Searching algorithms
+
+Binary Search reuses the bar chart of the sorting algorithms with its own legend (`new BarChart(compact, highlights)`):
+the middle element is amber, the found element is green and `state.range` dims everything outside `low..high`.
+`createSearchingModule` (`searching/searchingModule.ts`) creates a sorted array of 15 distinct values and a target,
+which is missing from the array in about a quarter of the runs.
+
 ### Graph algorithms
 
 A `Graph` (`graph/graphState.ts`) has nodes with a label and a position, and edges as pairs of node indices.
@@ -91,8 +98,8 @@ Every time the shown step changes, the page asks the module what the step does (
 `compare`, `write`, `select` or `other`) and `Sound` (`frontend/src/sound.ts`) plays the matching effect.
 The last step plays a short melody instead. Changing the language, pausing or randomizing is silent.
 Sorting derives the action from the step's highlights (`sortAction` in `sorting/sortingModule.ts`), so a new
-sorting algorithm gets sounds without extra work. Graph algorithms pass a map from step key to action to
-`createGraphModule` (e.g. `topologicalSortActions`). The sounds are generated with the Web Audio API, the volume
+sorting algorithm gets sounds without extra work. Searching and graph algorithms map their step keys to actions
+(`binarySearchActions`, `topologicalSortActions`). The sounds are generated with the Web Audio API, the volume
 and the mute state are saved in `localStorage`.
 
 ### Home page
@@ -120,7 +127,7 @@ JetBrains Mono for code (`font-mono`). Ligatures are turned off for code, so `==
 	exactly where the corresponding code line runs. Recursive algorithms also use `trace.call` / `trace.return`
 	(see above). For graphs, return `GraphStep[]` (see `graph/topologicalSort.ts`).
 3. **Register** it in `frontend/src/algorithms/registry.ts` under `"<category>/<slug>"`, with
-	`createSortingModule(sort)` or `createGraphModule(run, actions)`.
+	`createSortingModule(sort)`, `createSearchingModule(search, actions)` or `createGraphModule(run, actions)`.
 4. Run `npm test`. The tests check that:
 	- every line number in the JSON exists and all languages share the same step keys (backend),
 	- every step key the generator emits exists in every language (`registry.test.ts`),
