@@ -25,7 +25,11 @@ describe("API", () => {
 		expect(response.body[1].slug).toBe("searchingAlgorithms");
 		expect(response.body[1].algorithms.map((a: { slug: string }) => a.slug)).toEqual(["binarysearch"]);
 		expect(response.body[2].slug).toBe("graphAlgorithms");
-		expect(response.body[2].algorithms.map((a: { slug: string }) => a.slug)).toEqual(["topologicalsort"]);
+		expect(response.body[2].algorithms.map((a: { slug: string }) => a.slug)).toEqual([
+			"breadthfirstsearch",
+			"depthfirstsearch",
+			"topologicalsort",
+		]);
 	});
 
 	it("returns algorithm details", async () => {
