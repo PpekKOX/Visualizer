@@ -9,16 +9,18 @@ export interface GraphNode {
 export interface Graph {
 	nodes: GraphNode[];
 	edges: [number, number][];
+	directed: boolean;
 }
 
 export interface GraphState {
 	graph: Graph;
-	inDegree: number[];
-	queue: number[];
-	order: number[];
 	current: number | null;
+	waiting: number[];
+	done: number[];
 	activeEdge: number | null;
+	treeEdges: number[];
 	removedEdges: number[];
+	badges: string[];
 }
 
 export type GraphStep = Step<GraphState>;

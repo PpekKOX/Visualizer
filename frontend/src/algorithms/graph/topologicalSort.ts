@@ -1,43 +1,23 @@
-import type { StepAction, Variables } from "../types";
+import type { Variables } from "../types";
+import type { GraphAlgorithmConfig } from "./graphModule";
 import type { Graph, GraphStep } from "./graphState";
-
-export const topologicalSortActions: Record<string, StepAction> = {
-	countEdge: "compare",
-	fillQueue: "write",
-	takeNode: "select",
-	removeEdge: "compare",
-	enqueue: "write",
-};
+import { GraphTracer, type GraphFocus } from "./graphTracer";
+import { randomDag } from "./randomGraph";
 
 function joinLabels(labels: string[]): string {
 	return labels.length > 1 ? `${labels.slice(0, -1).join(", ")} and ${labels.at(-1)}` : labels.join("");
 }
 
 export function topologicalSort(graph: Graph): GraphStep[] {
-	const steps: GraphStep[] = [];
 	const inDegree = graph.nodes.map(() => 0);
 	const queue: number[] = [];
 	const order: number[] = [];
-	const removedEdges: number[] = [];
+	const trace = new GraphTracer(graph, () => ({ waiting: queue, done: order, badges: inDegree.map(String) }));
+	const { label, labels } = trace;
 	const outgoing = graph.nodes.map((_, node) => graph.edges.flatMap(([from], edge) => (from === node ? [edge] : [])));
-	const label = (node: number) => graph.nodes[node].label;
-	const labels = (nodes: number[]) => nodes.map(label);
 
-	function record(line: string, message: string, variables: Variables, focus: { current?: number; edge?: number } = {}): void {
-		steps.push({
-			line,
-			message,
-			variables: { ...variables, inDegree: Object.fromEntries(graph.nodes.map((node, index) => [node.label, inDegree[index]])) },
-			state: {
-				graph,
-				inDegree: [...inDegree],
-				queue: [...queue],
-				order: [...order],
-				current: focus.current ?? null,
-				activeEdge: focus.edge ?? null,
-				removedEdges: [...removedEdges],
-			},
-		});
+	function record(line: string, message: string, variables: Variables, focus: GraphFocus = {}): void {
+		trace.record(line, message, { ...variables, inDegree: Object.fromEntries(graph.nodes.map((node, index) => [node.label, inDegree[index]])) }, focus);
 	}
 
 	record("init", "Start with an in-degree of 0 for every node. The in-degree counts the edges that point to a node.", {});
@@ -78,7 +58,7 @@ export function topologicalSort(graph: Graph): GraphStep[] {
 		for (const edge of outgoing[node]) {
 			const neighbor = graph.edges[edge][1];
 			inDegree[neighbor]--;
-			removedEdges.push(edge);
+			trace.removedEdges.push(edge);
 			const left = inDegree[neighbor];
 			const verdict = left === 0 ? `${label(neighbor)} no longer waits for anything.` : `${label(neighbor)} still waits for ${left} more node${left > 1 ? "s" : ""}.`;
 			const variables = { node: label(node), neighbor: label(neighbor), queue: labels(queue), order: labels(order) };
@@ -97,5 +77,25 @@ export function topologicalSort(graph: Graph): GraphStep[] {
 	record("checkCycle", `The order contains all ${order.length} nodes, so the graph has no cycle.`, { queue: [], order: labels(order) });
 	record("done", `Done. ${labels(order).join(" → ")} is a valid order: every edge points forward.`, { queue: [], order: labels(order) });
 
-	return steps;
+	return trace.steps;
 }
+
+export const topologicalSortConfig: GraphAlgorithmConfig = {
+	run: topologicalSort,
+	randomGraph: randomDag,
+	actions: {
+		countEdge: "compare",
+		fillQueue: "write",
+		takeNode: "select",
+		removeEdge: "compare",
+		enqueue: "write",
+	},
+	view: {
+		waiting: "In queue",
+		done: "In order",
+		lists: [
+			{ label: "Queue", nodes: "waiting" },
+			{ label: "Order", nodes: "done" },
+		],
+	},
+};

@@ -1,36 +1,67 @@
-import { escapeHtml, fromHtml, slot } from "../../dom";
-import { legendHtml } from "../legend";
+import { escapeHtml, fromHtml } from "../../dom";
+import { legendHtml, type LegendItem } from "../legend";
 import type { Visualizer } from "../types";
 import type { Graph, GraphNode, GraphState } from "./graphState";
+
+export interface GraphViewOptions {
+	waiting?: string;
+	done: string;
+	treeEdge?: string;
+	lists: { label: string; nodes: "waiting" | "done" }[];
+}
+
+type NodeStatus = "current" | "waiting" | "done" | "idle";
 
 const NODE_RADIUS = 5.5;
 const ARROW_SIZE = 2.4;
 const BADGE_OFFSET = 4.4;
-const LEGEND = [
-	{ label: "In queue", color: "bg-amber-400" },
-	{ label: "Current node", color: "bg-violet-400" },
-	{ label: "In order", color: "bg-emerald-500" },
-	{ label: "Edge in focus", color: "bg-rose-500" },
-];
+const NODE_COLORS: Record<NodeStatus, { fill: string; bg: string }> = {
+	current: { fill: "fill-violet-400", bg: "bg-violet-400" },
+	waiting: { fill: "fill-amber-400", bg: "bg-amber-400" },
+	done: { fill: "fill-emerald-500", bg: "bg-emerald-500" },
+	idle: { fill: "fill-sky-500", bg: "bg-sky-500" },
+};
+const EDGE_COLORS = {
+	active: { text: "text-rose-500", bg: "bg-rose-500" },
+	tree: { text: "text-emerald-500", bg: "bg-emerald-500" },
+	idle: { text: "text-slate-500" },
+};
+
+function legendItems({ waiting, done, treeEdge }: GraphViewOptions): LegendItem[] {
+	const items: LegendItem[] = [
+		{ label: "Current node", color: NODE_COLORS.current.bg },
+		{ label: done, color: NODE_COLORS.done.bg },
+		{ label: "Edge in focus", color: EDGE_COLORS.active.bg, line: true },
+	];
+	if (waiting) items.unshift({ label: waiting, color: NODE_COLORS.waiting.bg });
+	if (treeEdge) items.push({ label: treeEdge, color: EDGE_COLORS.tree.bg, line: true });
+
+	return items;
+}
 
 function point(x: number, y: number): string {
 	return `${x.toFixed(2)},${y.toFixed(2)}`;
 }
 
-function edgeHtml(from: GraphNode, to: GraphNode): string {
+function edgeHtml(graph: Graph, edge: number): string {
+	const [from, to] = graph.edges[edge].map((node) => graph.nodes[node]);
 	const length = Math.hypot(to.x - from.x, to.y - from.y);
 	const dx = (to.x - from.x) / length;
 	const dy = (to.y - from.y) / length;
 	const tipX = to.x - dx * NODE_RADIUS;
 	const tipY = to.y - dy * NODE_RADIUS;
-	const baseX = tipX - dx * ARROW_SIZE;
-	const baseY = tipY - dy * ARROW_SIZE;
-	const wing = ARROW_SIZE / 2;
+	const arrowSize = graph.directed ? ARROW_SIZE : 0;
+	const baseX = tipX - dx * arrowSize;
+	const baseY = tipY - dy * arrowSize;
+	const wing = arrowSize / 2;
+	const arrow = graph.directed
+		? `<polygon points="${point(tipX, tipY)} ${point(baseX - dy * wing, baseY + dx * wing)} ${point(baseX + dy * wing, baseY - dx * wing)}" fill="currentColor" />`
+		: "";
 
 	return `
 		<g data-edge>
 			<line x1="${from.x + dx * NODE_RADIUS}" y1="${from.y + dy * NODE_RADIUS}" x2="${baseX}" y2="${baseY}" stroke="currentColor" stroke-width="0.6" />
-			<polygon points="${point(tipX, tipY)} ${point(baseX - dy * wing, baseY + dx * wing)} ${point(baseX + dy * wing, baseY - dx * wing)}" fill="currentColor" />
+			${arrow}
 		</g>`;
 }
 
@@ -49,80 +80,92 @@ function nodeHtml({ label, x, y }: GraphNode): string {
 		</g>`;
 }
 
-function nodeColor(state: GraphState, node: number): string {
-	if (node === state.current) return "fill-violet-400";
-	if (state.order.includes(node)) return "fill-emerald-500";
-	if (state.queue.includes(node)) return "fill-amber-400";
+function nodeStatus(state: GraphState, node: number): NodeStatus {
+	if (node === state.current) return "current";
+	if (state.waiting.includes(node)) return "waiting";
+	if (state.done.includes(node)) return "done";
 
-	return "fill-sky-500";
+	return "idle";
 }
 
-function chipsHtml(graph: Graph, nodes: number[], color: string): string {
+function focusedNeighbor({ graph, activeEdge, current }: GraphState): number | null {
+	if (activeEdge === null) return null;
+	const [from, to] = graph.edges[activeEdge];
+
+	return to === current ? from : to;
+}
+
+function chipsHtml(state: GraphState, nodes: number[]): string {
 	if (nodes.length === 0) return `<span class="text-slate-500">empty</span>`;
 
 	return nodes
-		.map((node) => `<span class="rounded-md px-2 py-0.5 font-mono font-semibold text-slate-950 ${color}">${escapeHtml(graph.nodes[node].label)}</span>`)
+		.map((node) => {
+			const color = NODE_COLORS[nodeStatus(state, node)].bg;
+			return `<span class="rounded-md px-2 py-0.5 font-mono font-semibold text-slate-950 ${color}">${escapeHtml(state.graph.nodes[node].label)}</span>`;
+		})
 		.join("");
 }
 
 export class GraphView implements Visualizer<GraphState> {
 	readonly element: HTMLElement;
 	private readonly svg: SVGSVGElement;
-	private readonly queue: HTMLElement;
-	private readonly order: HTMLElement;
+	private readonly lists: HTMLElement[];
 	private graph: Graph | undefined;
 	private edges: SVGGElement[] = [];
 	private nodes: SVGGElement[] = [];
 
-	constructor(private readonly compact = false) {
-		const list = (label: string, name: string) => `
+	constructor(
+		private readonly options: GraphViewOptions,
+		private readonly compact = false,
+	) {
+		const list = ({ label }: { label: string }) => `
 			<div class="flex min-h-11 items-center gap-3 rounded-lg bg-slate-950/60 px-3 py-2">
-				<dt class="w-12 shrink-0 text-slate-400">${label}</dt>
-				<dd class="flex flex-wrap gap-1.5" data-slot="${name}"></dd>
+				<dt class="w-14 shrink-0 text-slate-400">${escapeHtml(label)}</dt>
+				<dd class="flex flex-wrap gap-1.5" data-list></dd>
 			</div>`;
 
 		this.element = fromHtml(`
 			<div class="${compact ? "h-full" : ""}">
 				<svg viewBox="${compact ? "6 6 128 44" : "0 0 140 56"}" class="${compact ? "h-full w-full" : "h-56 w-full sm:h-72"}" aria-hidden="true"></svg>
-				<dl class="${compact ? "hidden" : "mt-4 grid gap-2 text-sm sm:grid-cols-2"}">
-					${list("Queue", "queue")}
-					${list("Order", "order")}
+				<dl class="${compact ? "hidden" : `mt-4 grid gap-2 text-sm ${options.lists.length > 1 ? "sm:grid-cols-2" : ""}`}">
+					${options.lists.map(list).join("")}
 				</dl>
-				${compact ? "" : legendHtml(LEGEND)}
+				${compact ? "" : legendHtml(legendItems(options))}
 			</div>`);
 		this.svg = this.element.querySelector("svg")!;
-		this.queue = slot(this.element, "queue");
-		this.order = slot(this.element, "order");
+		this.lists = [...this.element.querySelectorAll<HTMLElement>("[data-list]")];
 	}
 
 	render(state: GraphState): void {
 		if (state.graph !== this.graph) this.draw(state.graph);
 
-		const changedNode = state.activeEdge === null ? null : state.graph.edges[state.activeEdge][1];
+		const neighbor = focusedNeighbor(state);
 
 		this.edges.forEach((edge, index) => {
 			const active = index === state.activeEdge;
+			const color = active ? EDGE_COLORS.active : state.treeEdges.includes(index) ? EDGE_COLORS.tree : EDGE_COLORS.idle;
 			const removed = !active && state.removedEdges.includes(index);
-			edge.setAttribute("class", `transition-colors duration-200 ${active ? "text-rose-500" : "text-slate-500"} ${removed ? "opacity-20" : ""}`);
+			edge.setAttribute("class", `transition-colors duration-200 ${color.text} ${removed ? "opacity-20" : ""}`);
 		});
 
 		this.nodes.forEach((node, index) => {
 			const [circle, , badge] = node.children;
-			const badgeColor = index === changedNode ? "fill-rose-500 stroke-rose-300" : "fill-slate-800 stroke-slate-500";
+			const value = state.badges[index];
+			const badgeColor = index === neighbor ? "fill-rose-500 stroke-rose-300" : "fill-slate-800 stroke-slate-500";
 
-			circle.setAttribute("class", `transition-colors duration-200 ${nodeColor(state, index)}`);
-			badge.setAttribute("class", this.compact ? "hidden" : badgeColor);
-			badge.lastElementChild!.textContent = String(state.inDegree[index]);
+			circle.setAttribute("class", `transition-colors duration-200 ${NODE_COLORS[nodeStatus(state, index)].fill}`);
+			badge.setAttribute("class", this.compact || value === undefined ? "hidden" : badgeColor);
+			badge.lastElementChild!.textContent = value ?? "";
 		});
 
-		this.queue.innerHTML = chipsHtml(state.graph, state.queue, "bg-amber-400");
-		this.order.innerHTML = chipsHtml(state.graph, state.order, "bg-emerald-500");
+		this.lists.forEach((list, index) => {
+			list.innerHTML = chipsHtml(state, state[this.options.lists[index].nodes]);
+		});
 	}
 
 	private draw(graph: Graph): void {
 		this.graph = graph;
-		this.svg.innerHTML =
-			graph.edges.map(([from, to]) => edgeHtml(graph.nodes[from], graph.nodes[to])).join("") + graph.nodes.map(nodeHtml).join("");
+		this.svg.innerHTML = graph.edges.map((_, edge) => edgeHtml(graph, edge)).join("") + graph.nodes.map(nodeHtml).join("");
 		this.edges = [...this.svg.querySelectorAll<SVGGElement>("[data-edge]")];
 		this.nodes = [...this.svg.querySelectorAll<SVGGElement>("[data-node]")];
 	}

@@ -83,14 +83,32 @@ which is missing from the array in about a quarter of the runs.
 
 ### Graph algorithms
 
-A `Graph` (`graph/graphState.ts`) has nodes with a label and a position, and edges as pairs of node indices.
-`randomGraph()` (`graph/graphModule.ts`) shuffles the labels A–G over a fixed layout of four columns and only
-adds edges from one column to the next, so every graph is acyclic and easy to read. `GraphView` draws it as
-SVG: the node colours show the queue, the current node and the order, the small badge shows the in-degree and
-the edge in focus is red. Below the graph it lists the queue and the order.
+A `Graph` (`graph/graphState.ts`) has nodes with a label and a position, edges as pairs of node indices and a
+`directed` flag. `graph/randomGraph.ts` puts the labels A–G in a random order on a fixed layout of four columns:
 
-Topological Sort (Kahn's algorithm) records its steps with a small local `record` helper that takes a snapshot
-of the in-degrees, the queue, the order and the removed edges.
+- `randomDag()` only adds edges from one column to the next, so the graph never has a cycle (Topological Sort).
+
+The step generators use `GraphTracer` (`graph/graphTracer.ts`), the graph version of `SortTracer`. It gets a
+function that returns the algorithm's own lists (`waiting`, `done` and optional `badges`), and
+`trace.record(stepKey, message, variables, { current, edge })` takes a snapshot of them. `trace.neighbors(node)`
+returns the neighbors in alphabetical order, the same order the code examples use, and `call` / `return` keep the
+call stack of recursive algorithms.
+
+`GraphView` draws the state as SVG without knowing which algorithm runs:
+
+| State          | Shown as                                  | For example                        |
+| -------------- | ----------------------------------------- | ---------------------------------- |
+| `current`      | violet node                               | the node that is being processed   |
+| `waiting`      | amber nodes                               | the queue                          |
+| `done`         | green nodes                               | the order                          |
+| `activeEdge`   | red edge and a red badge on its other end | the edge that is being checked     |
+| `treeEdges`    | green edges                               | the edges that reached a node      |
+| `removedEdges` | faded edges                               | the edges Kahn's algorithm removed |
+| `badges`       | small number next to every node           | the in-degree                      |
+
+Every graph algorithm exports a `GraphAlgorithmConfig` (e.g. `topologicalSortConfig`) with its step generator, its random
+graph, the sound of each step key and the labels for the legend and for the lists below the graph. The chips in
+those lists have the same colour as their node.
 
 ### Sound
 
@@ -99,7 +117,7 @@ Every time the shown step changes, the page asks the module what the step does (
 The last step plays a short melody instead. Changing the language, pausing or randomizing is silent.
 Sorting derives the action from the step's highlights (`sortAction` in `sorting/sortingModule.ts`), so a new
 sorting algorithm gets sounds without extra work. Searching and graph algorithms map their step keys to actions
-(`binarySearchActions`, `topologicalSortActions`). The sounds are generated with the Web Audio API, the volume
+(`binarySearchActions`, `actions` in a `GraphAlgorithmConfig`). The sounds are generated with the Web Audio API, the volume
 and the mute state are saved in `localStorage`.
 
 ### Home page
@@ -125,9 +143,10 @@ JetBrains Mono for code (`font-mono`). Ligatures are turned off for code, so `==
 2. **Step generator**: add a function to `frontend/src/algorithms/<category>/` that returns the recorded
 	steps. For sorting, use `SortTracer` and call `trace.record(stepKey, message, variables, highlights)`
 	exactly where the corresponding code line runs. Recursive algorithms also use `trace.call` / `trace.return`
-	(see above). For graphs, return `GraphStep[]` (see `graph/topologicalSort.ts`).
+	(see above). For graphs, use `GraphTracer` the same way and export a `GraphAlgorithmConfig`
+	(see `graph/topologicalSort.ts`).
 3. **Register** it in `frontend/src/algorithms/registry.ts` under `"<category>/<slug>"`, with
-	`createSortingModule(sort)`, `createSearchingModule(search, actions)` or `createGraphModule(run, actions)`.
+	`createSortingModule(sort)`, `createSearchingModule(search, actions)` or `createGraphModule(config)`.
 4. Run `npm test`. The tests check that:
 	- every line number in the JSON exists and all languages share the same step keys (backend),
 	- every step key the generator emits exists in every language (`registry.test.ts`),
