@@ -1,0 +1,105 @@
+{
+	"name": "Breadth-First Search",
+	"summary": "Explores a graph layer by layer: first all neighbors of the start, then their neighbors, and so on.",
+	"description": [
+		"Breadth-First Search (BFS) explores a graph in layers. It starts at one node, visits all of its neighbors, then all of their neighbors, and so on, like ripples spreading out on water. The nodes that still have to be explored wait in a queue: new nodes join at the back and the next node is always taken from the front.",
+		"A node is marked as visited as soon as it is found, not when it leaves the queue. That way no node joins the queue twice, even when several edges lead to it. Here the neighbors of a node are checked in alphabetical order, and the green edges show through which edge every node was found.",
+		"Every node is taken from the queue once and every edge is checked from both of its ends, so BFS runs in O(V + E) time. Because it explores layer by layer, the green path from the start to any node uses as few edges as possible. That makes BFS the standard way to find shortest paths when every edge counts the same, such as the fewest moves in a puzzle."
+	],
+	"complexity": { "best": "O(V + E)", "average": "O(V + E)", "worst": "O(V + E)", "space": "O(V)" },
+	"properties": [
+		{ "label": "Data structure", "value": "Queue" },
+		{ "label": "Finds shortest paths", "value": "Yes, by number of edges" },
+		{ "label": "Graph", "value": "Directed or undirected" }
+	],
+	"code": {
+		"javascript": {
+			"lines": [
+				"function bfs(graph, start) {",
+				"    const visited = new Set([start]);",
+				"    const queue = [start];",
+				"    const order = [];",
+				"",
+				"    while (queue.length > 0) {",
+				"        const node = queue.shift();",
+				"        order.push(node);",
+				"",
+				"        for (const neighbor of graph[node]) {",
+				"            if (!visited.has(neighbor)) {",
+				"                visited.add(neighbor);",
+				"                queue.push(neighbor);",
+				"            }",
+				"        }",
+				"    }",
+				"",
+				"    return order;",
+				"}"
+			],
+			"steps": {
+				"init": [2, 3, 4],
+				"takeNode": [6, 7, 8],
+				"skipNeighbor": [10, 11],
+				"discover": [10, 11, 12, 13],
+				"done": [18]
+			}
+		},
+		"python": {
+			"lines": [
+				"from collections import deque",
+				"",
+				"def bfs(graph, start):",
+				"    visited = {start}",
+				"    queue = deque([start])",
+				"    order = []",
+				"",
+				"    while queue:",
+				"        node = queue.popleft()",
+				"        order.append(node)",
+				"",
+				"        for neighbor in graph[node]:",
+				"            if neighbor not in visited:",
+				"                visited.add(neighbor)",
+				"                queue.append(neighbor)",
+				"",
+				"    return order"
+			],
+			"steps": {
+				"init": [4, 5, 6],
+				"takeNode": [8, 9, 10],
+				"skipNeighbor": [12, 13],
+				"discover": [12, 13, 14, 15],
+				"done": [17]
+			}
+		},
+		"java": {
+			"lines": [
+				"static List<String> bfs(Map<String, List<String>> graph, String start) {",
+				"    Set<String> visited = new HashSet<>(List.of(start));",
+				"    Deque<String> queue = new ArrayDeque<>(List.of(start));",
+				"    List<String> order = new ArrayList<>();",
+				"",
+				"    while (!queue.isEmpty()) {",
+				"        String node = queue.poll();",
+				"        order.add(node);",
+				"",
+				"        for (String neighbor : graph.get(node)) {",
+				"            if (!visited.contains(neighbor)) {",
+				"                visited.add(neighbor);",
+				"                queue.add(neighbor);",
+				"            }",
+				"        }",
+				"    }",
+				"",
+				"    return order;",
+				"}"
+			],
+			"steps": {
+				"init": [2, 3, 4],
+				"takeNode": [6, 7, 8],
+				"skipNeighbor": [10, 11],
+				"discover": [10, 11, 12, 13],
+				"done": [18]
+			}
+		}
+	}
+}

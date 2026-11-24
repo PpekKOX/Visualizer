@@ -87,20 +87,22 @@ A `Graph` (`graph/graphState.ts`) has nodes with a label and a position, edges a
 `directed` flag. `graph/randomGraph.ts` puts the labels A–G in a random order on a fixed layout of four columns:
 
 - `randomDag()` only adds edges from one column to the next, so the graph never has a cycle (Topological Sort).
+- `randomUndirectedGraph()` picks a random spanning tree, so the graph is connected, and adds a few extra edges,
+	so it has cycles (BFS, DFS). Every square of four nodes gets only one of its diagonals, so no edges cross.
 
 The step generators use `GraphTracer` (`graph/graphTracer.ts`), the graph version of `SortTracer`. It gets a
 function that returns the algorithm's own lists (`waiting`, `done` and optional `badges`), and
 `trace.record(stepKey, message, variables, { current, edge })` takes a snapshot of them. `trace.neighbors(node)`
 returns the neighbors in alphabetical order, the same order the code examples use, and `call` / `return` keep the
-call stack of recursive algorithms.
+call stack of recursive algorithms (DFS).
 
 `GraphView` draws the state as SVG without knowing which algorithm runs:
 
 | State          | Shown as                                  | For example                        |
 | -------------- | ----------------------------------------- | ---------------------------------- |
 | `current`      | violet node                               | the node that is being processed   |
-| `waiting`      | amber nodes                               | the queue                          |
-| `done`         | green nodes                               | the order                          |
+| `waiting`      | amber nodes                               | the queue, the call stack          |
+| `done`         | green nodes                               | the order, the visited nodes       |
 | `activeEdge`   | red edge and a red badge on its other end | the edge that is being checked     |
 | `treeEdges`    | green edges                               | the edges that reached a node      |
 | `removedEdges` | faded edges                               | the edges Kahn's algorithm removed |
@@ -144,7 +146,7 @@ JetBrains Mono for code (`font-mono`). Ligatures are turned off for code, so `==
 	steps. For sorting, use `SortTracer` and call `trace.record(stepKey, message, variables, highlights)`
 	exactly where the corresponding code line runs. Recursive algorithms also use `trace.call` / `trace.return`
 	(see above). For graphs, use `GraphTracer` the same way and export a `GraphAlgorithmConfig`
-	(see `graph/topologicalSort.ts`).
+	(see `graph/breadthFirstSearch.ts`).
 3. **Register** it in `frontend/src/algorithms/registry.ts` under `"<category>/<slug>"`, with
 	`createSortingModule(sort)`, `createSearchingModule(search, actions)` or `createGraphModule(config)`.
 4. Run `npm test`. The tests check that:

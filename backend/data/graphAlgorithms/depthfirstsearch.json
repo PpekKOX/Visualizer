@@ -1,0 +1,74 @@
+{
+	"name": "Depth-First Search",
+	"summary": "Explores a graph by going as deep as possible along every path before it backtracks.",
+	"description": [
+		"Depth-First Search (DFS) explores a graph by always going as deep as it can. From the current node it follows the first unvisited neighbor, from there again the first unvisited neighbor, and so on. Only when a node has no unvisited neighbors left does it backtrack to the node it came from and try that node's next neighbor, like exploring a maze by following one path until it ends.",
+		"This version is recursive: dfs calls itself for every new node, so the call stack remembers the way back. Here it starts with dfs(graph, A, visited) and an empty visited set, the neighbors are checked in alphabetical order and the green edges show through which edge every node was reached.",
+		"Every node is visited once and every edge is checked from both of its ends, so DFS runs in O(V + E) time. The paths it finds are usually not the shortest ones, but DFS is the base of many other algorithms, such as finding cycles, connected components or a topological order. On very deep graphs the recursion can run out of stack space, so large inputs use a loop with an explicit stack instead."
+	],
+	"complexity": { "best": "O(V + E)", "average": "O(V + E)", "worst": "O(V + E)", "space": "O(V)" },
+	"properties": [
+		{ "label": "Data structure", "value": "Call stack (recursion)" },
+		{ "label": "Finds shortest paths", "value": "No" },
+		{ "label": "Graph", "value": "Directed or undirected" }
+	],
+	"code": {
+		"javascript": {
+			"lines": [
+				"function dfs(graph, node, visited) {",
+				"    visited.add(node);",
+				"    for (const neighbor of graph[node]) {",
+				"        if (!visited.has(neighbor)) {",
+				"            dfs(graph, neighbor, visited);",
+				"        }",
+				"    }",
+				"    return visited;",
+				"}"
+			],
+			"steps": {
+				"visit": [2],
+				"skipNeighbor": [3, 4],
+				"goDeeper": [3, 4, 5],
+				"backtrack": [8],
+				"done": [8]
+			}
+		},
+		"python": {
+			"lines": [
+				"def dfs(graph, node, visited):",
+				"    visited.add(node)",
+				"    for neighbor in graph[node]:",
+				"        if neighbor not in visited:",
+				"            dfs(graph, neighbor, visited)",
+				"    return visited"
+			],
+			"steps": {
+				"visit": [2],
+				"skipNeighbor": [3, 4],
+				"goDeeper": [3, 4, 5],
+				"backtrack": [6],
+				"done": [6]
+			}
+		},
+		"java": {
+			"lines": [
+				"static Set<String> dfs(Map<String, List<String>> graph, String node, Set<String> visited) {",
+				"    visited.add(node);",
+				"    for (String neighbor : graph.get(node)) {",
+				"        if (!visited.contains(neighbor)) {",
+				"            dfs(graph, neighbor, visited);",
+				"        }",
+				"    }",
+				"    return visited;",
+				"}"
+			],
+			"steps": {
+				"visit": [2],
+				"skipNeighbor": [3, 4],
+				"goDeeper": [3, 4, 5],
+				"backtrack": [8],
+				"done": [8]
+			}
+		}
+	}
+}

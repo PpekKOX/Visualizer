@@ -1,3 +1,5 @@
+import { breadthFirstSearchConfig } from "./graph/breadthFirstSearch";
+import { depthFirstSearchConfig } from "./graph/depthFirstSearch";
 import { createGraphModule } from "./graph/graphModule";
 import { topologicalSortConfig } from "./graph/topologicalSort";
 import { binarySearch, binarySearchActions } from "./searching/binarySearch";
@@ -19,6 +21,8 @@ const modules = new Map<string, AlgorithmModule>([
 	["sortingAlgorithms/quicksort", createSortingModule(quickSort)],
 	["sortingAlgorithms/heapsort", createSortingModule(heapSort)],
 	["searchingAlgorithms/binarysearch", createSearchingModule(binarySearch, binarySearchActions)],
+	["graphAlgorithms/breadthfirstsearch", createGraphModule(breadthFirstSearchConfig)],
+	["graphAlgorithms/depthfirstsearch", createGraphModule(depthFirstSearchConfig)],
 	["graphAlgorithms/topologicalsort", createGraphModule(topologicalSortConfig)],
 ]);
 

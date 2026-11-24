@@ -30,16 +30,18 @@ It is built for visual learners and for anyone who wants to really see an algori
 
 ## Algorithms
 
-| Category  | Algorithm        | Average time | Extra space |
-| --------- | ---------------- | ------------ | ----------- |
-| Sorting   | Bubble Sort      | O(n²)        | O(1)        |
-| Sorting   | Selection Sort   | O(n²)        | O(1)        |
-| Sorting   | Insertion Sort   | O(n²)        | O(1)        |
-| Sorting   | Merge Sort       | O(n log n)   | O(n)        |
-| Sorting   | Quick Sort       | O(n log n)   | O(log n)    |
-| Sorting   | Heap Sort        | O(n log n)   | O(1)        |
-| Searching | Binary Search    | O(log n)     | O(1)        |
-| Graph     | Topological Sort | O(V + E)     | O(V)        |
+| Category  | Algorithm            | Average time | Extra space |
+| --------- | -------------------- | ------------ | ----------- |
+| Sorting   | Bubble Sort          | O(n²)        | O(1)        |
+| Sorting   | Selection Sort       | O(n²)        | O(1)        |
+| Sorting   | Insertion Sort       | O(n²)        | O(1)        |
+| Sorting   | Merge Sort           | O(n log n)   | O(n)        |
+| Sorting   | Quick Sort           | O(n log n)   | O(log n)    |
+| Sorting   | Heap Sort            | O(n log n)   | O(1)        |
+| Searching | Binary Search        | O(log n)     | O(1)        |
+| Graph     | Breadth-First Search | O(V + E)     | O(V)        |
+| Graph     | Depth-First Search   | O(V + E)     | O(V)        |
+| Graph     | Topological Sort     | O(V + E)     | O(V)        |
 
 More algorithms, such as path-finding, are planned.
 
