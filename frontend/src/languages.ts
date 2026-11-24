@@ -10,12 +10,16 @@ export const LANGUAGE_LABELS: Record<LanguageId, string> = {
 	java: "Java",
 };
 
+function formatItem(value: number | string | boolean): string {
+	return value === Infinity ? "∞" : String(value);
+}
+
 export function formatValue(value: VariableValue, language: LanguageId): string {
-	if (Array.isArray(value)) return `[${value.join(", ")}]`;
-	if (typeof value === "object") return `{${Object.entries(value).map(([key, item]) => `${key}: ${item}`).join(", ")}}`;
+	if (Array.isArray(value)) return `[${value.map(formatItem).join(", ")}]`;
+	if (typeof value === "object") return `{${Object.entries(value).map(([key, item]) => `${key}: ${formatItem(item)}`).join(", ")}}`;
 	if (typeof value === "boolean" && language === "python") return value ? "True" : "False";
 
-	return String(value);
+	return formatItem(value);
 }
 
 export function loadPreferredLanguage(available: LanguageId[]): LanguageId {
