@@ -4,6 +4,7 @@ import type { Graph, GraphNode } from "./graphState";
 const LABELS = ["A", "B", "C", "D", "E", "F", "G"];
 const EDGE_CHANCE = 0.5;
 const EXTRA_EDGE_CHANCE = 0.35;
+const MAX_WEIGHT = 9;
 const LAYOUT = [
 	{ x: 14, y: 14, column: 0 },
 	{ x: 14, y: 42, column: 0 },
@@ -74,4 +75,9 @@ export function randomUndirectedGraph(): Graph {
 	if (extra.length === 0) extra.push(randomItem(rest));
 
 	return { nodes: randomNodes(), edges: sortedEdges([...tree, ...extra]), directed: false };
+}
+
+export function randomWeightedGraph(): Graph {
+	const graph = randomUndirectedGraph();
+	return { ...graph, weights: graph.edges.map(() => 1 + Math.floor(Math.random() * MAX_WEIGHT)) };
 }

@@ -83,12 +83,14 @@ which is missing from the array in about a quarter of the runs.
 
 ### Graph algorithms
 
-A `Graph` (`graph/graphState.ts`) has nodes with a label and a position, edges as pairs of node indices and a
-`directed` flag. `graph/randomGraph.ts` puts the labels A–G in a random order on a fixed layout of four columns:
+A `Graph` (`graph/graphState.ts`) has nodes with a label and a position, edges as pairs of node indices, a
+`directed` flag and optional edge `weights`. `graph/randomGraph.ts` puts the labels A–G in a random order on a
+fixed layout of four columns:
 
 - `randomDag()` only adds edges from one column to the next, so the graph never has a cycle (Topological Sort).
 - `randomUndirectedGraph()` picks a random spanning tree, so the graph is connected, and adds a few extra edges,
 	so it has cycles (BFS, DFS). Every square of four nodes gets only one of its diagonals, so no edges cross.
+- `randomWeightedGraph()` also gives every edge a weight from 1 to 9 (Dijkstra).
 
 The step generators use `GraphTracer` (`graph/graphTracer.ts`), the graph version of `SortTracer`. It gets a
 function that returns the algorithm's own lists (`waiting`, `done` and optional `badges`), and
@@ -98,17 +100,17 @@ call stack of recursive algorithms (DFS).
 
 `GraphView` draws the state as SVG without knowing which algorithm runs:
 
-| State          | Shown as                                  | For example                        |
-| -------------- | ----------------------------------------- | ---------------------------------- |
-| `current`      | violet node                               | the node that is being processed   |
-| `waiting`      | amber nodes                               | the queue, the call stack          |
-| `done`         | green nodes                               | the order, the visited nodes       |
-| `activeEdge`   | red edge and a red badge on its other end | the edge that is being checked     |
-| `treeEdges`    | green edges                               | the edges that reached a node      |
-| `removedEdges` | faded edges                               | the edges Kahn's algorithm removed |
-| `badges`       | small number next to every node           | the in-degree                      |
+| State          | Shown as                                  | For example                                     |
+| -------------- | ----------------------------------------- | ----------------------------------------------- |
+| `current`      | violet node                               | the node that is being processed                |
+| `waiting`      | amber nodes                               | the queue, the call stack, a tentative distance |
+| `done`         | green nodes                               | the order, the visited nodes, a final distance  |
+| `activeEdge`   | red edge and a red badge on its other end | the edge that is being checked                  |
+| `treeEdges`    | green edges                               | the edges that reached a node, shortest paths   |
+| `removedEdges` | faded edges                               | the edges Kahn's algorithm removed              |
+| `badges`       | small number next to every node           | the in-degree, the distance                     |
 
-Every graph algorithm exports a `GraphAlgorithmConfig` (e.g. `topologicalSortConfig`) with its step generator, its random
+Every graph algorithm exports a `GraphAlgorithmConfig` (e.g. `dijkstraConfig`) with its step generator, its random
 graph, the sound of each step key and the labels for the legend and for the lists below the graph. The chips in
 those lists have the same colour as their node.
 

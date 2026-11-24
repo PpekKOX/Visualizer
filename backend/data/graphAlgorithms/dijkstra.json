@@ -1,0 +1,120 @@
+{
+	"name": "Dijkstra's Algorithm",
+	"summary": "Finds the shortest path from a start node to every other node in a graph with weighted edges.",
+	"description": [
+		"Dijkstra's algorithm finds the shortest paths from a start node to all other nodes of a graph whose edges have non-negative weights, such as the lengths of the roads between cities. It keeps a distance for every node: 0 for the start and ∞ for all other nodes at first.",
+		"In every round it picks the unvisited node with the smallest distance and visits it. That distance is final: any other path to the node would have to leave the visited nodes somewhere, and every node out there is already at least as far away. Then it relaxes the edges of the node: if the way through it to a neighbor is shorter than the neighbor's distance so far, that distance gets updated. The green edges show through which edge each node got its final distance.",
+		"This simple version scans all nodes to find the next one, so it takes O(V²) time, which is fine for small or dense graphs. With a priority queue (a binary heap) the next node is found faster and the algorithm runs in O((V + E) log V). It does not work with negative weights, because a negative edge could still make a visited node closer."
+	],
+	"complexity": { "best": "O(V²)", "average": "O(V²)", "worst": "O(V²)", "space": "O(V)" },
+	"properties": [
+		{ "label": "Edge weights", "value": "Non-negative" },
+		{ "label": "With a priority queue", "value": "O((V + E) log V)" },
+		{ "label": "Finds shortest paths", "value": "Yes, from the start to every node" }
+	],
+	"code": {
+		"javascript": {
+			"lines": [
+				"function dijkstra(graph, start) {",
+				"    const dist = {};",
+				"    for (const node in graph) dist[node] = Infinity;",
+				"    dist[start] = 0;",
+				"    const visited = new Set();",
+				"",
+				"    while (visited.size < Object.keys(graph).length) {",
+				"        let node = null;",
+				"        for (const candidate in graph) {",
+				"            if (!visited.has(candidate) && (node === null || dist[candidate] < dist[node])) {",
+				"                node = candidate;",
+				"            }",
+				"        }",
+				"        visited.add(node);",
+				"",
+				"        for (const [neighbor, weight] of Object.entries(graph[node])) {",
+				"            if (dist[node] + weight < dist[neighbor]) {",
+				"                dist[neighbor] = dist[node] + weight;",
+				"            }",
+				"        }",
+				"    }",
+				"",
+				"    return dist;",
+				"}"
+			],
+			"steps": {
+				"init": [2, 3, 4, 5],
+				"pickNode": [7, 8, 9, 10, 11],
+				"visit": [14],
+				"relax": [16, 17, 18],
+				"skipEdge": [16, 17],
+				"done": [23]
+			}
+		},
+		"python": {
+			"lines": [
+				"def dijkstra(graph, start):",
+				"    dist = {node: float(\"inf\") for node in graph}",
+				"    dist[start] = 0",
+				"    visited = set()",
+				"",
+				"    while len(visited) < len(graph):",
+				"        node = None",
+				"        for candidate in graph:",
+				"            if candidate not in visited and (node is None or dist[candidate] < dist[node]):",
+				"                node = candidate",
+				"        visited.add(node)",
+				"",
+				"        for neighbor, weight in graph[node].items():",
+				"            if dist[node] + weight < dist[neighbor]:",
+				"                dist[neighbor] = dist[node] + weight",
+				"",
+				"    return dist"
+			],
+			"steps": {
+				"init": [2, 3, 4],
+				"pickNode": [6, 7, 8, 9, 10],
+				"visit": [11],
+				"relax": [13, 14, 15],
+				"skipEdge": [13, 14],
+				"done": [17]
+			}
+		},
+		"java": {
+			"lines": [
+				"static Map<String, Double> dijkstra(Map<String, Map<String, Integer>> graph, String start) {",
+				"    Map<String, Double> dist = new HashMap<>();",
+				"    for (String node : graph.keySet()) dist.put(node, Double.POSITIVE_INFINITY);",
+				"    dist.put(start, 0.0);",
+				"    Set<String> visited = new HashSet<>();",
+				"",
+				"    while (visited.size() < graph.size()) {",
+				"        String node = null;",
+				"        for (String candidate : graph.keySet()) {",
+				"            if (!visited.contains(candidate) && (node == null || dist.get(candidate) < dist.get(node))) {",
+				"                node = candidate;",
+				"            }",
+				"        }",
+				"        visited.add(node);",
+				"",
+				"        for (Map.Entry<String, Integer> edge : graph.get(node).entrySet()) {",
+				"            String neighbor = edge.getKey();",
+				"            int weight = edge.getValue();",
+				"            if (dist.get(node) + weight < dist.get(neighbor)) {",
+				"                dist.put(neighbor, dist.get(node) + weight);",
+				"            }",
+				"        }",
+				"    }",
+				"",
+				"    return dist;",
+				"}"
+			],
+			"steps": {
+				"init": [2, 3, 4, 5],
+				"pickNode": [7, 8, 9, 10, 11],
+				"visit": [14],
+				"relax": [16, 17, 18, 19, 20],
+				"skipEdge": [16, 17, 18, 19],
+				"done": [25]
+			}
+		}
+	}
+}

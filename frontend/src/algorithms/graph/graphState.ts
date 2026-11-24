@@ -10,6 +10,7 @@ export interface Graph {
 	nodes: GraphNode[];
 	edges: [number, number][];
 	directed: boolean;
+	weights?: number[];
 }
 
 export interface GraphState {

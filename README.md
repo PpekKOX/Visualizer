@@ -42,8 +42,9 @@ It is built for visual learners and for anyone who wants to really see an algori
 | Graph     | Breadth-First Search | O(V + E)     | O(V)        |
 | Graph     | Depth-First Search   | O(V + E)     | O(V)        |
 | Graph     | Topological Sort     | O(V + E)     | O(V)        |
+| Graph     | Dijkstra's Algorithm | O(V²)        | O(V)        |
 
-More algorithms, such as path-finding, are planned.
+More algorithms are planned.
 
 ## Getting started
 

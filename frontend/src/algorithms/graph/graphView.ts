@@ -43,7 +43,13 @@ function point(x: number, y: number): string {
 	return `${x.toFixed(2)},${y.toFixed(2)}`;
 }
 
-function edgeHtml(graph: Graph, edge: number): string {
+function weightHtml(x: number, y: number, weight: number): string {
+	return `
+		<circle cx="${x}" cy="${y}" r="2.4" stroke="currentColor" stroke-width="0.4" class="fill-slate-900" />
+		<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="central" class="fill-slate-100 font-mono text-[3px] font-semibold">${weight}</text>`;
+}
+
+function edgeHtml(graph: Graph, edge: number, compact: boolean): string {
 	const [from, to] = graph.edges[edge].map((node) => graph.nodes[node]);
 	const length = Math.hypot(to.x - from.x, to.y - from.y);
 	const dx = (to.x - from.x) / length;
@@ -57,11 +63,13 @@ function edgeHtml(graph: Graph, edge: number): string {
 	const arrow = graph.directed
 		? `<polygon points="${point(tipX, tipY)} ${point(baseX - dy * wing, baseY + dx * wing)} ${point(baseX + dy * wing, baseY - dx * wing)}" fill="currentColor" />`
 		: "";
+	const weight = graph.weights && !compact ? weightHtml((from.x + to.x) / 2, (from.y + to.y) / 2, graph.weights[edge]) : "";
 
 	return `
 		<g data-edge>
 			<line x1="${from.x + dx * NODE_RADIUS}" y1="${from.y + dy * NODE_RADIUS}" x2="${baseX}" y2="${baseY}" stroke="currentColor" stroke-width="0.6" />
 			${arrow}
+			${weight}
 		</g>`;
 }
 
@@ -165,7 +173,7 @@ export class GraphView implements Visualizer<GraphState> {
 
 	private draw(graph: Graph): void {
 		this.graph = graph;
-		this.svg.innerHTML = graph.edges.map((_, edge) => edgeHtml(graph, edge)).join("") + graph.nodes.map(nodeHtml).join("");
+		this.svg.innerHTML = graph.edges.map((_, edge) => edgeHtml(graph, edge, this.compact)).join("") + graph.nodes.map(nodeHtml).join("");
 		this.edges = [...this.svg.querySelectorAll<SVGGElement>("[data-edge]")];
 		this.nodes = [...this.svg.querySelectorAll<SVGGElement>("[data-node]")];
 	}

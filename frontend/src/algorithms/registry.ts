@@ -1,5 +1,6 @@
 import { breadthFirstSearchConfig } from "./graph/breadthFirstSearch";
 import { depthFirstSearchConfig } from "./graph/depthFirstSearch";
+import { dijkstraConfig } from "./graph/dijkstra";
 import { createGraphModule } from "./graph/graphModule";
 import { topologicalSortConfig } from "./graph/topologicalSort";
 import { binarySearch, binarySearchActions } from "./searching/binarySearch";
@@ -24,6 +25,7 @@ const modules = new Map<string, AlgorithmModule>([
 	["graphAlgorithms/breadthfirstsearch", createGraphModule(breadthFirstSearchConfig)],
 	["graphAlgorithms/depthfirstsearch", createGraphModule(depthFirstSearchConfig)],
 	["graphAlgorithms/topologicalsort", createGraphModule(topologicalSortConfig)],
+	["graphAlgorithms/dijkstra", createGraphModule(dijkstraConfig)],
 ]);
 
 export function getAlgorithmModule(category: string, slug: string): AlgorithmModule | undefined {
