@@ -1,0 +1,136 @@
+{
+	"name": "Greedy Best-First Search",
+	"summary": "Rushes toward the goal by always exploring the cell that looks closest to it. Fast, but its path is not always the shortest.",
+	"description": [
+		"Greedy best-first search looks for a path from a start to a goal on a grid with walls, where every step goes up, down, left or right. The code gets the grid as a graph in which graph[cell] lists the free neighbors of a cell, and h[cell], the Manhattan distance from the cell to the goal: the number of steps it would take if there were no walls.",
+		"It keeps an open list of the cells it has seen but not explored yet, and always explores the one with the smallest h, the cell that looks closest to the goal. Every new neighbor remembers the cell it was seen from, its parent. Once the goal is picked, following the parents back to the start gives the path. On a tie the cell added last wins (the <= in the code).",
+		"Because it only looks ahead and never counts the steps it has already taken, it often reaches the goal after exploring only a few cells. But it can run into a dead end or around the wrong side of a wall, and then its path is longer than necessary. A* fixes this by adding g, the steps taken so far, to h.",
+		"Scanning the open list for the next cell takes O(V²) time, where V is the number of free cells. In the best case nothing is in the way and the search walks straight along the d cells of the path. With a priority queue it runs in O(E log V)."
+	],
+	"complexity": { "best": "O(d²)", "average": "O(V²)", "worst": "O(V²)", "space": "O(V)" },
+	"properties": [
+		{ "label": "Heuristic", "value": "Manhattan distance" },
+		{ "label": "Finds the shortest path", "value": "Not always" },
+		{ "label": "Explored cells", "value": "Usually fewer than A*" }
+	],
+	"code": {
+		"javascript": {
+			"lines": [
+				"function greedyBestFirstSearch(graph, h, start, goal) {",
+				"    const parent = { [start]: null };",
+				"    const openList = [start];",
+				"",
+				"    while (openList.length > 0) {",
+				"        let cell = openList[0];",
+				"        for (const candidate of openList) {",
+				"            if (h[candidate] <= h[cell]) cell = candidate;",
+				"        }",
+				"        if (cell === goal) {",
+				"            const path = [goal];",
+				"            while (path[0] !== start) path.unshift(parent[path[0]]);",
+				"            return path;",
+				"        }",
+				"        openList.splice(openList.indexOf(cell), 1);",
+				"",
+				"        for (const neighbor of graph[cell]) {",
+				"            if (!(neighbor in parent)) {",
+				"                parent[neighbor] = cell;",
+				"                openList.push(neighbor);",
+				"            }",
+				"        }",
+				"    }",
+				"",
+				"    return null;",
+				"}"
+			],
+			"steps": {
+				"init": [2, 3],
+				"pickCell": [5, 6, 7, 8, 10, 15],
+				"discover": [17, 18, 19, 20],
+				"skipNeighbor": [17, 18],
+				"reachGoal": [5, 6, 7, 8, 10, 11],
+				"tracePath": [12],
+				"done": [13],
+				"noPath": [25]
+			}
+		},
+		"python": {
+			"lines": [
+				"def greedy_best_first_search(graph, h, start, goal):",
+				"    parent = {start: None}",
+				"    open_list = [start]",
+				"",
+				"    while open_list:",
+				"        cell = open_list[0]",
+				"        for candidate in open_list:",
+				"            if h[candidate] <= h[cell]:",
+				"                cell = candidate",
+				"        if cell == goal:",
+				"            path = [goal]",
+				"            while path[0] != start:",
+				"                path.insert(0, parent[path[0]])",
+				"            return path",
+				"        open_list.remove(cell)",
+				"",
+				"        for neighbor in graph[cell]:",
+				"            if neighbor not in parent:",
+				"                parent[neighbor] = cell",
+				"                open_list.append(neighbor)",
+				"",
+				"    return None"
+			],
+			"steps": {
+				"init": [2, 3],
+				"pickCell": [5, 6, 7, 8, 9, 10, 15],
+				"discover": [17, 18, 19, 20],
+				"skipNeighbor": [17, 18],
+				"reachGoal": [5, 6, 7, 8, 9, 10, 11],
+				"tracePath": [12, 13],
+				"done": [14],
+				"noPath": [22]
+			},
+			"identifiers": { "openList": "open_list" }
+		},
+		"java": {
+			"lines": [
+				"static List<String> greedyBestFirstSearch(Map<String, List<String>> graph, Map<String, Integer> h, String start, String goal) {",
+				"    Map<String, String> parent = new HashMap<>();",
+				"    parent.put(start, null);",
+				"    List<String> openList = new ArrayList<>(List.of(start));",
+				"",
+				"    while (!openList.isEmpty()) {",
+				"        String cell = openList.get(0);",
+				"        for (String candidate : openList) {",
+				"            if (h.get(candidate) <= h.get(cell)) cell = candidate;",
+				"        }",
+				"        if (cell.equals(goal)) {",
+				"            LinkedList<String> path = new LinkedList<>(List.of(goal));",
+				"            while (!path.getFirst().equals(start)) path.addFirst(parent.get(path.getFirst()));",
+				"            return path;",
+				"        }",
+				"        openList.remove(cell);",
+				"",
+				"        for (String neighbor : graph.get(cell)) {",
+				"            if (!parent.containsKey(neighbor)) {",
+				"                parent.put(neighbor, cell);",
+				"                openList.add(neighbor);",
+				"            }",
+				"        }",
+				"    }",
+				"",
+				"    return null;",
+				"}"
+			],
+			"steps": {
+				"init": [2, 3, 4],
+				"pickCell": [6, 7, 8, 9, 11, 16],
+				"discover": [18, 19, 20, 21],
+				"skipNeighbor": [18, 19],
+				"reachGoal": [6, 7, 8, 9, 11, 12],
+				"tracePath": [13],
+				"done": [14],
+				"noPath": [26]
+			}
+		}
+	}
+}

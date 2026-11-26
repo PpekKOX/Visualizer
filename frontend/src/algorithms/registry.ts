@@ -3,6 +3,9 @@ import { depthFirstSearchConfig } from "./graph/depthFirstSearch";
 import { dijkstraConfig } from "./graph/dijkstra";
 import { createGraphModule } from "./graph/graphModule";
 import { topologicalSortConfig } from "./graph/topologicalSort";
+import { aStarConfig } from "./pathfinding/aStar";
+import { greedyBestFirstSearchConfig } from "./pathfinding/greedyBestFirstSearch";
+import { createPathfindingModule } from "./pathfinding/pathfindingModule";
 import { binarySearch, binarySearchActions } from "./searching/binarySearch";
 import { createSearchingModule } from "./searching/searchingModule";
 import { bubbleSort } from "./sorting/bubbleSort";
@@ -26,6 +29,8 @@ const modules = new Map<string, AlgorithmModule>([
 	["graphAlgorithms/depthfirstsearch", createGraphModule(depthFirstSearchConfig)],
 	["graphAlgorithms/topologicalsort", createGraphModule(topologicalSortConfig)],
 	["graphAlgorithms/dijkstra", createGraphModule(dijkstraConfig)],
+	["pathfindingAlgorithms/greedybestfirstsearch", createPathfindingModule(greedyBestFirstSearchConfig)],
+	["pathfindingAlgorithms/astar", createPathfindingModule(aStarConfig)],
 ]);
 
 export function getAlgorithmModule(category: string, slug: string): AlgorithmModule | undefined {

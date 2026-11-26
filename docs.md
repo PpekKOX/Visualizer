@@ -114,14 +114,48 @@ Every graph algorithm exports a `GraphAlgorithmConfig` (e.g. `dijkstraConfig`) w
 graph, the sound of each step key and the labels for the legend and for the lists below the graph. The chips in
 those lists have the same colour as their node.
 
+### Pathfinding algorithms
+
+A `Grid` (`pathfinding/gridState.ts`) has `rows × cols` cells numbered row by row, the walls, a start and a goal.
+Cells are named like on a chess board, with a column letter and a row number (`C4`), and the view labels its axes
+the same way. `randomGrid()` (`pathfinding/randomGrid.ts`) draws a few random wall segments on a 12 × 6 grid, with
+the start in the first column and the goal in the last one. It tries again until a path exists that is longer than
+the Manhattan distance, so a wall is always in the way.
+
+The code examples get the grid as a graph (`graph[cell]` lists the free neighbors up, right, down and left) and a
+map `h` with the Manhattan distance from every cell to the goal. `pathfinding/grid.ts` has the same helpers for the
+step generators (`freeNeighbors`, `manhattan`) and `stepsFromStart`, a breadth-first search that the tests and the
+last message of Greedy best-first search use as the real shortest distance.
+
+Both algorithms pick the open cell with the lowest priority (f = g + h for A*, h for Greedy). On a tie the cell added
+last wins (`lowest` in `pathfinding/gridTracer.ts`, the `<=` in the code), so the search keeps following its newest
+path instead of spreading out. Picking a cell and taking it out of the open list is a single step (`pickCell`),
+which keeps A* at about 135 steps on average. `GridTracer` records the steps like `GraphTracer`: a function returns
+the open list, the explored cells and the number shown in every cell (`scores`), and `trace.tracePath(parent, record)`
+follows the parents back from the goal. Once the path has a cell, every step also gets the `path` variable.
+
+`GridView` draws the state as SVG, walls in grey and the start and the goal as S and G:
+
+| State      | Shown as                                                                 |
+| ---------- | ------------------------------------------------------------------------ |
+| `current`  | violet cell                                                              |
+| `open`     | amber cells (the open list)                                              |
+| `explored` | blue cells, already taken out of the open list                           |
+| `path`     | green cells                                                              |
+| `neighbor` | red outline around the neighbor that is being checked                    |
+| `scores`   | number in a cell, f for A* and h for Greedy (hidden in the compact view) |
+
+Every pathfinding algorithm exports a `PathfindingConfig` (e.g. `aStarConfig`) with its step generator, the sound
+of each step key and the name of the number in the cells (`view.score`).
+
 ### Sound
 
 Every time the shown step changes, the page asks the module what the step does (`actionOf(step)`:
 `compare`, `write`, `select` or `other`) and `Sound` (`frontend/src/sound.ts`) plays the matching effect.
 The last step plays a short melody instead. Changing the language, pausing or randomizing is silent.
 Sorting derives the action from the step's highlights (`sortAction` in `sorting/sortingModule.ts`), so a new
-sorting algorithm gets sounds without extra work. Searching and graph algorithms map their step keys to actions
-(`binarySearchActions`, `actions` in a `GraphAlgorithmConfig`). The sounds are generated with the Web Audio API, the volume
+sorting algorithm gets sounds without extra work. Searching, graph and pathfinding algorithms map their step keys to
+actions (`binarySearchActions`, `actions` in a `GraphAlgorithmConfig` or a `PathfindingConfig`). The sounds are generated with the Web Audio API, the volume
 and the mute state are saved in `localStorage`.
 
 ### Home page
@@ -148,9 +182,11 @@ JetBrains Mono for code (`font-mono`). Ligatures are turned off for code, so `==
 	steps. For sorting, use `SortTracer` and call `trace.record(stepKey, message, variables, highlights)`
 	exactly where the corresponding code line runs. Recursive algorithms also use `trace.call` / `trace.return`
 	(see above). For graphs, use `GraphTracer` the same way and export a `GraphAlgorithmConfig`
-	(see `graph/breadthFirstSearch.ts`).
+	(see `graph/breadthFirstSearch.ts`), for pathfinding `GridTracer` and a `PathfindingConfig`
+	(see `pathfinding/greedyBestFirstSearch.ts`).
 3. **Register** it in `frontend/src/algorithms/registry.ts` under `"<category>/<slug>"`, with
-	`createSortingModule(sort)`, `createSearchingModule(search, actions)` or `createGraphModule(config)`.
+	`createSortingModule(sort)`, `createSearchingModule(search, actions)`, `createGraphModule(config)` or
+	`createPathfindingModule(config)`.
 4. Run `npm test`. The tests check that:
 	- every line number in the JSON exists and all languages share the same step keys (backend),
 	- every step key the generator emits exists in every language (`registry.test.ts`),
@@ -164,13 +200,13 @@ It is also worth running the code snippets themselves once in each language befo
 
 The URL is `/<category>/<slug>`, e.g. `/sortingAlgorithms/bubblesort`.
 
-## Adding a new category (e.g. path-finding)
+## Adding a new category (e.g. trees)
 
 Create a new folder in `frontend/src/algorithms/` with its own state type, a tracer or step helper, and a
 class implementing `Visualizer<TState>` (`element` + `render(state)`, with a compact variant for the home
 page). Wrap them in an `AlgorithmModule`
-together with an `actionOf(step)` function for the sounds (see `sorting/sortingModule.ts` or
-`graph/graphModule.ts`) and register the
+together with an `actionOf(step)` function for the sounds (see `sorting/sortingModule.ts`,
+`graph/graphModule.ts` or `pathfinding/pathfindingModule.ts`) and register the
 algorithms. The page, player, code panel and variables
 panel need no changes.
 
