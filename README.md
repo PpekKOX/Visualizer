@@ -99,3 +99,7 @@ Contributions are welcome! [docs.md](docs.md#adding-an-algorithm) will walk you 
 
 Before opening a pull request, please run `npm test` and `npm run typecheck`.
 The code style uses tabs with a width of 4 (see [.editorconfig](.editorconfig)).
+
+## License
+
+[MIT](LICENSE)
