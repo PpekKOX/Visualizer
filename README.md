@@ -7,6 +7,8 @@
 Visualizer animates algorithms and highlights the exact line of code that runs at every step,<br>
 so you can connect the idea behind an algorithm with the code that implements it.
 
+**[Try it live at openvisualizer.com →](https://openvisualizer.com)**
+
 </div>
 
 ![Quick Sort in Visualizer: animated bars, the highlighted line of code, the variables and the call stack](.github/screenshot.png)
