@@ -7,6 +7,7 @@
 		"dev": "tsx watch src/server.ts",
 		"build": "tsc -p tsconfig.build.json",
 		"start": "node dist/server.js",
+		"export": "node dist/exportApi.js",
 		"test": "vitest run",
 		"typecheck": "tsc --noEmit"
 	},

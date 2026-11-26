@@ -9,7 +9,7 @@ npm install        # installs all workspaces
 npm run dev        # backend on :3000 + frontend (Vite) on :5173, /api is proxied
 npm test           # backend + frontend tests
 npm run typecheck
-npm run build      # builds backend/dist and frontend/dist
+npm run build      # builds backend/dist and frontend/dist and exports the API to frontend/dist/api
 npm start          # production: Express serves the API and the built frontend on :3000 (PORT to override)
 ```
 
@@ -19,7 +19,7 @@ npm start          # production: Express serves the API and the built frontend o
 shared/      TypeScript types for the API contract (types only, no runtime code)
 backend/     Express API (TypeScript)
 	data/    Algorithm content as JSON (descriptions, complexity, code per language)
-	src/     Repository (loads JSON), routes, app, server
+	src/     Repository (loads JSON), routes, app, server, static API export
 frontend/    Vanilla TypeScript + Vite + Tailwind CSS
 	src/algorithms/ Step generators and visualizers, grouped by category
 	src/components/ Code panel, variables panel, playback controls, algorithm info, live preview
@@ -30,10 +30,27 @@ frontend/    Vanilla TypeScript + Vite + Tailwind CSS
 
 ### API
 
-| Method | Path                                | Response             |
-| ------ | ----------------------------------- | -------------------- |
-| GET    | `/api/categories`                   | `CategorySummary[]`  |
-| GET    | `/api/algorithms/:category/:slug`   | `AlgorithmDetails`   |
+| Method | Path                                    | Response             |
+| ------ | --------------------------------------- | -------------------- |
+| GET    | `/api/categories.json`                  | `CategorySummary[]`  |
+| GET    | `/api/algorithms/:category/:slug.json`  | `AlgorithmDetails`   |
+
+The paths end in `.json` so that the same URLs work without a server (see [Deployment](#deployment)).
+
+## Deployment
+
+The API only reads the JSON files in `backend/data`, so the whole app can run as a static site. `npm run build`
+ends with `npm run export -w backend` (`backend/src/exportApi.ts`), which writes every API response to a file at
+the same path, e.g. `frontend/dist/api/algorithms/sortingAlgorithms/quicksort.json`.
+
+`frontend/dist` can therefore be deployed in two ways:
+
+- **Static hosting** (e.g. Cloudflare Pages): build command `npm run build`, output directory `frontend/dist`.
+	The host must answer unknown paths with `index.html`, so `/sortingAlgorithms/quicksort` loads the app.
+	Cloudflare Pages does this on its own as long as there is no `404.html`.
+- **Node server**: `npm run build` and `npm start`. Express serves the same API and the built frontend.
+
+The frontend fetches the same URLs in both cases, so switching between them needs no code changes.
 
 ## How a visualization works
 

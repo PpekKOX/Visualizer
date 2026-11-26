@@ -9,7 +9,7 @@ const app = createApp(repository);
 
 describe("API", () => {
 	it("lists categories with their algorithms", async () => {
-		const response = await request(app).get("/api/categories");
+		const response = await request(app).get("/api/categories.json");
 
 		expect(response.status).toBe(200);
 		expect(response.body[0].slug).toBe("sortingAlgorithms");
@@ -36,7 +36,7 @@ describe("API", () => {
 	});
 
 	it("returns algorithm details", async () => {
-		const response = await request(app).get("/api/algorithms/sortingAlgorithms/bubblesort");
+		const response = await request(app).get("/api/algorithms/sortingAlgorithms/bubblesort.json");
 
 		expect(response.status).toBe(200);
 		expect(response.body.name).toBe("Bubble Sort");
@@ -45,7 +45,7 @@ describe("API", () => {
 	});
 
 	it("returns 404 for unknown algorithms and endpoints", async () => {
-		expect((await request(app).get("/api/algorithms/sortingAlgorithms/unknown")).status).toBe(404);
+		expect((await request(app).get("/api/algorithms/sortingAlgorithms/unknown.json")).status).toBe(404);
 		expect((await request(app).get("/api/unknown")).status).toBe(404);
 	});
 });

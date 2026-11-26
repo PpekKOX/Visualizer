@@ -10,9 +10,9 @@ async function getJson<T>(url: string): Promise<T | undefined> {
 }
 
 export async function fetchCategories(): Promise<CategorySummary[]> {
-	return (await getJson<CategorySummary[]>("/api/categories")) ?? [];
+	return (await getJson<CategorySummary[]>("/api/categories.json")) ?? [];
 }
 
 export function fetchAlgorithm(category: string, slug: string): Promise<AlgorithmDetails | undefined> {
-	return getJson<AlgorithmDetails>(`/api/algorithms/${encodeURIComponent(category)}/${encodeURIComponent(slug)}`);
+	return getJson<AlgorithmDetails>(`/api/algorithms/${encodeURIComponent(category)}/${encodeURIComponent(slug)}.json`);
 }
