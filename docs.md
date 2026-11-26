@@ -53,6 +53,11 @@ that every exported file is identical to the live API response.
 
 The frontend fetches the same URLs in both cases, so switching between them needs no code changes.
 
+Link previews (Discord, X, …) come from the Open Graph tags in `frontend/index.html`. They point to
+`https://openvisualizer.com/social-preview.png` (`frontend/public/social-preview.png`), a 2560 × 1280 screenshot of
+the home page taken in a 1600 × 800 window. The same image is the repository's social preview on GitHub. Crawlers
+do not run JavaScript, so every page shares this preview.
+
 ### Code splitting
 
 The build splits the JavaScript into small minified chunks, and no source maps are published:
