@@ -41,7 +41,8 @@ The paths end in `.json` so that the same URLs work without a server (see [Deplo
 
 The API only reads the JSON files in `backend/data`, so the whole app can run as a static site. `npm run build`
 ends with `npm run export -w backend` (`backend/src/exportApi.ts`), which writes every API response to a file at
-the same path, e.g. `frontend/dist/api/algorithms/sortingAlgorithms/quicksort.json`.
+the same path, e.g. `frontend/dist/api/algorithms/sortingAlgorithms/quicksort.json`. `staticApi.test.ts` checks
+that every exported file is identical to the live API response.
 
 `frontend/dist` can therefore be deployed in two ways:
 
@@ -206,6 +207,7 @@ JetBrains Mono for code (`font-mono`). Ligatures are turned off for code, so `==
 	`createPathfindingModule(config)`.
 4. Run `npm test`. The tests check that:
 	- every line number in the JSON exists and all languages share the same step keys (backend),
+	- the static export contains the new algorithm and matches the API (`staticApi.test.ts`),
 	- every step key the generator emits exists in every language (`registry.test.ts`),
 	- the generator really sorts and only changes the array on write steps (`sorting.test.ts`),
 	- recursive generators keep the call stack and the highlighted range in sync (`sorting.test.ts`),
