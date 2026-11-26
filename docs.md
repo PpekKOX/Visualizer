@@ -53,6 +53,17 @@ that every exported file is identical to the live API response.
 
 The frontend fetches the same URLs in both cases, so switching between them needs no code changes.
 
+### Code splitting
+
+The build splits the JavaScript into small minified chunks, and no source maps are published:
+
+- `vendor` – everything from `node_modules` (highlight.js), set up in `frontend/vite.config.ts`. It rarely
+	changes, so browsers keep it cached between releases.
+- `algorithmPage` – loaded with `import()` in `main.ts` when an algorithm route is opened.
+- one chunk per category (`sortingAlgorithms`, `graphAlgorithms`, …) – `registry.ts` loads a category only
+	when one of its algorithms is needed. An algorithm page only loads its own category, while the home page
+	loads all of them for the card snapshots.
+
 ## How a visualization works
 
 The frontend runs the algorithm once and records every step up front. A step is:
@@ -202,8 +213,8 @@ JetBrains Mono for code (`font-mono`). Ligatures are turned off for code, so `==
 	(see above). For graphs, use `GraphTracer` the same way and export a `GraphAlgorithmConfig`
 	(see `graph/breadthFirstSearch.ts`), for pathfinding `GridTracer` and a `PathfindingConfig`
 	(see `pathfinding/greedyBestFirstSearch.ts`).
-3. **Register** it in `frontend/src/algorithms/registry.ts` under `"<category>/<slug>"`, with
-	`createSortingModule(sort)`, `createSearchingModule(search, actions)`, `createGraphModule(config)` or
+3. **Register** it under its slug in the category's list, e.g. `frontend/src/algorithms/sorting/sortingAlgorithms.ts`,
+	with `createSortingModule(sort)`, `createSearchingModule(search, actions)`, `createGraphModule(config)` or
 	`createPathfindingModule(config)`.
 4. Run `npm test`. The tests check that:
 	- every line number in the JSON exists and all languages share the same step keys (backend),
@@ -227,8 +238,9 @@ Create a new folder in `frontend/src/algorithms/` with its own state type, a tra
 class implementing `Visualizer<TState>` (`element` + `render(state)`, with a compact variant for the home
 page). Wrap them in an `AlgorithmModule`
 together with an `actionOf(step)` function for the sounds (see `sorting/sortingModule.ts`,
-`graph/graphModule.ts` or `pathfinding/pathfindingModule.ts`) and register the
-algorithms. The page, player, code panel and variables
+`graph/graphModule.ts` or `pathfinding/pathfindingModule.ts`). List the algorithms in a `<category>Algorithms.ts`
+file that exports `algorithms` (see `sorting/sortingAlgorithms.ts`) and add a loader for it to `registry.ts`, which
+gives the category its own chunk. The page, player, code panel and variables
 panel need no changes.
 
 ## Adding a programming language

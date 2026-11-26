@@ -43,7 +43,7 @@ function handleShortcut(event: KeyboardEvent, player: Player): void {
 }
 
 export async function algorithmPage({ category, algorithm }: Params): Promise<View> {
-	const module = getAlgorithmModule(category, algorithm);
+	const module = await getAlgorithmModule(category, algorithm);
 	if (!module) return notFoundPage();
 
 	const [details, categories] = await Promise.all([fetchAlgorithm(category, algorithm), fetchCategories()]);

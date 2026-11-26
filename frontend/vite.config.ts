@@ -7,4 +7,9 @@ export default defineConfig({
 	plugins: [tailwindcss()],
 	server: { proxy: api },
 	preview: { proxy: api },
+	build: {
+		rolldownOptions: {
+			output: { codeSplitting: { groups: [{ name: "vendor", test: /node_modules/ }] } },
+		},
+	},
 });

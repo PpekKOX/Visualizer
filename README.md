@@ -69,8 +69,8 @@ Then open <http://localhost:5173>. The API runs on port 3000 and Vite forwards `
 
 ## Deployment
 
-`npm run build` produces a complete static site in `frontend/dist`: the minified app and every API response
-exported as a JSON file. It runs on any static host that serves `index.html` for unknown paths,
+`npm run build` produces a complete static site in `frontend/dist`: the app split into small minified chunks and
+every API response exported as a JSON file. It runs on any static host that serves `index.html` for unknown paths,
 e.g. Cloudflare Pages with the build command `npm run build` and the output directory `frontend/dist`.
 `npm start` serves the same site with a live API instead. [docs.md](docs.md#deployment) has the details.
 

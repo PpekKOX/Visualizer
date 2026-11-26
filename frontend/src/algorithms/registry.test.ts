@@ -17,8 +17,8 @@ describe("algorithm registry", () => {
 
 	it.each(algorithms.map((algorithm) => [algorithm.file.name, algorithm]))(
 		"%s: every step highlights existing code in every language",
-		(_name, { category, slug, file }) => {
-			const module = getAlgorithmModule(category, slug);
+		async (_name, { category, slug, file }) => {
+			const module = await getAlgorithmModule(category, slug);
 			expect(module, `${category}/${slug} has no registered module`).toBeDefined();
 
 			const usedLines = new Set<string>();

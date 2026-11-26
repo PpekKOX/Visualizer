@@ -1,38 +1,16 @@
-import { breadthFirstSearchConfig } from "./graph/breadthFirstSearch";
-import { depthFirstSearchConfig } from "./graph/depthFirstSearch";
-import { dijkstraConfig } from "./graph/dijkstra";
-import { createGraphModule } from "./graph/graphModule";
-import { topologicalSortConfig } from "./graph/topologicalSort";
-import { aStarConfig } from "./pathfinding/aStar";
-import { greedyBestFirstSearchConfig } from "./pathfinding/greedyBestFirstSearch";
-import { createPathfindingModule } from "./pathfinding/pathfindingModule";
-import { binarySearch, binarySearchActions } from "./searching/binarySearch";
-import { createSearchingModule } from "./searching/searchingModule";
-import { bubbleSort } from "./sorting/bubbleSort";
-import { heapSort } from "./sorting/heapSort";
-import { insertionSort } from "./sorting/insertionSort";
-import { mergeSort } from "./sorting/mergeSort";
-import { quickSort } from "./sorting/quickSort";
-import { selectionSort } from "./sorting/selectionSort";
-import { createSortingModule } from "./sorting/sortingModule";
 import type { AlgorithmModule } from "./types";
 
-const modules = new Map<string, AlgorithmModule>([
-	["sortingAlgorithms/bubblesort", createSortingModule(bubbleSort)],
-	["sortingAlgorithms/selectionsort", createSortingModule(selectionSort)],
-	["sortingAlgorithms/insertionsort", createSortingModule(insertionSort)],
-	["sortingAlgorithms/mergesort", createSortingModule(mergeSort)],
-	["sortingAlgorithms/quicksort", createSortingModule(quickSort)],
-	["sortingAlgorithms/heapsort", createSortingModule(heapSort)],
-	["searchingAlgorithms/binarysearch", createSearchingModule(binarySearch, binarySearchActions)],
-	["graphAlgorithms/breadthfirstsearch", createGraphModule(breadthFirstSearchConfig)],
-	["graphAlgorithms/depthfirstsearch", createGraphModule(depthFirstSearchConfig)],
-	["graphAlgorithms/topologicalsort", createGraphModule(topologicalSortConfig)],
-	["graphAlgorithms/dijkstra", createGraphModule(dijkstraConfig)],
-	["pathfindingAlgorithms/greedybestfirstsearch", createPathfindingModule(greedyBestFirstSearchConfig)],
-	["pathfindingAlgorithms/astar", createPathfindingModule(aStarConfig)],
+type CategoryLoader = () => Promise<{ algorithms: Map<string, AlgorithmModule> }>;
+
+const categories = new Map<string, CategoryLoader>([
+	["sortingAlgorithms", () => import("./sorting/sortingAlgorithms")],
+	["searchingAlgorithms", () => import("./searching/searchingAlgorithms")],
+	["graphAlgorithms", () => import("./graph/graphAlgorithms")],
+	["pathfindingAlgorithms", () => import("./pathfinding/pathfindingAlgorithms")],
 ]);
 
-export function getAlgorithmModule(category: string, slug: string): AlgorithmModule | undefined {
-	return modules.get(`${category}/${slug}`);
+export async function getAlgorithmModule(category: string, slug: string): Promise<AlgorithmModule | undefined> {
+	const load = categories.get(category);
+
+	return load ? (await load()).algorithms.get(slug) : undefined;
 }

@@ -37,8 +37,8 @@ const FEATURES = [
 	},
 ];
 
-function createPreview(details: AlgorithmDetails | undefined): LivePreview | undefined {
-	const module = getAlgorithmModule(PREVIEW.category, PREVIEW.slug);
+async function createPreview(details: AlgorithmDetails | undefined): Promise<LivePreview | undefined> {
+	const module = await getAlgorithmModule(PREVIEW.category, PREVIEW.slug);
 	if (!module || !details) return undefined;
 
 	const language = loadPreferredLanguage(Object.keys(details.code) as LanguageId[]);
@@ -55,12 +55,16 @@ function snapshot(module: AlgorithmModule): HTMLElement {
 	return visualizer.element;
 }
 
-function addSnapshots(root: HTMLElement): void {
-	for (const placeholder of root.querySelectorAll<HTMLElement>("[data-snapshot]")) {
-		const [category, slug] = placeholder.dataset.snapshot!.split("/");
-		const module = getAlgorithmModule(category, slug);
-		if (module) placeholder.append(snapshot(module));
-	}
+async function addSnapshots(root: HTMLElement): Promise<void> {
+	const placeholders = [...root.querySelectorAll<HTMLElement>("[data-snapshot]")];
+
+	await Promise.all(
+		placeholders.map(async (placeholder) => {
+			const [category, slug] = placeholder.dataset.snapshot!.split("/");
+			const module = await getAlgorithmModule(category, slug);
+			if (module) placeholder.append(snapshot(module));
+		}),
+	);
 }
 
 function complexityStyle(value: string): string {
@@ -159,9 +163,8 @@ export async function homePage(): Promise<View> {
 			</section>
 		</div>`);
 
-	const preview = createPreview(previewDetails);
+	const [preview] = await Promise.all([createPreview(previewDetails), addSnapshots(element)]);
 	if (preview) slot(element, "preview").replaceWith(preview.element);
-	addSnapshots(element);
 
 	return { element, title: "Visualizer · See your code step by step", destroy: () => preview?.destroy() };
 }
