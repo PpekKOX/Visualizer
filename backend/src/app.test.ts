@@ -31,6 +31,8 @@ describe("API", () => {
 			"topologicalsort",
 			"dijkstra",
 		]);
+		expect(response.body[3].slug).toBe("pathfindingAlgorithms");
+		expect(response.body[3].algorithms.map((a: { slug: string }) => a.slug)).toEqual(["greedybestfirstsearch", "astar"]);
 	});
 
 	it("returns algorithm details", async () => {
