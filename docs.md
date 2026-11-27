@@ -68,7 +68,7 @@ It reads the exported API and writes:
 
 The site URL is `SITE_URL` in `frontend/prerender.ts`. The home page's title, description and canonical URL are in
 `frontend/index.html`, and `algorithmTitle` (`components/algorithmHeader.ts`) builds the title of every algorithm
-page.
+page. `staticPages.test.ts` checks the pages against the real `index.html`.
 
 Link previews (Discord, X, …) come from the Open Graph tags. Every page has its own title and description, and all
 of them show `https://openvisualizer.com/social-preview.png` (`frontend/public/social-preview.png`), a 2560 × 1280
