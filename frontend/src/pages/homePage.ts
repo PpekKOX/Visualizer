@@ -166,5 +166,5 @@ export async function homePage(): Promise<View> {
 	const [preview] = await Promise.all([createPreview(previewDetails), addSnapshots(element)]);
 	if (preview) slot(element, "preview").replaceWith(preview.element);
 
-	return { element, title: "Visualizer · See your code step by step", destroy: () => preview?.destroy() };
+	return { element, title: "Algorithm Visualizer – See Your Code Run Step by Step", destroy: () => preview?.destroy() };
 }

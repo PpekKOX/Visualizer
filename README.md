@@ -66,14 +66,15 @@ Then open <http://localhost:5173>. The API runs on port 3000 and Vite forwards `
 | `npm run dev`       | Starts the backend and the frontend in development mode          |
 | `npm test`          | Runs all tests                                                   |
 | `npm run typecheck` | Type-checks all workspaces                                       |
-| `npm run build`     | Builds the backend and the frontend and exports the API to JSON  |
+| `npm run build`     | Builds the app, exports the API and prerenders the pages         |
 | `npm start`         | Serves the built app and the API on port 3000 (`PORT` to change) |
 
 ## Deployment
 
-`npm run build` produces a complete static site in `frontend/dist`: the app split into small minified chunks and
-every API response exported as a JSON file. It runs on any static host that serves `index.html` for unknown paths,
-e.g. Cloudflare Pages with the build command `npm run build` and the output directory `frontend/dist`.
+`npm run build` produces a complete static site in `frontend/dist`: the app split into small minified chunks, every
+API response exported as a JSON file, a prerendered page with its own title and description for every algorithm, a
+sitemap and `robots.txt`. It runs on any static host that serves `<path>.html` for `<path>` and `404.html` for unknown
+paths, e.g. Cloudflare Pages with the build command `npm run build` and the output directory `frontend/dist`.
 `npm start` serves the same site with a live API instead. [docs.md](docs.md#deployment) has the details.
 
 ## Tech stack

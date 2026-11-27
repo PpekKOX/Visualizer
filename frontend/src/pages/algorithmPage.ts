@@ -1,32 +1,17 @@
-import type { CategorySummary, LanguageId } from "@visualizer/shared";
+import type { LanguageId } from "@visualizer/shared";
 import { getAlgorithmModule } from "../algorithms/registry";
 import { fetchAlgorithm, fetchCategories } from "../api";
+import { algorithmHeaderHtml, algorithmTitle } from "../components/algorithmHeader";
 import { createAlgorithmInfo } from "../components/algorithmInfo";
 import { CodePanel } from "../components/codePanel";
 import { Controls } from "../components/controls";
 import { VariablesPanel } from "../components/variablesPanel";
-import { escapeHtml, fromHtml, slot } from "../dom";
+import { fromHtml, slot } from "../dom";
 import { loadPreferredLanguage, savePreferredLanguage } from "../languages";
 import { Player } from "../player";
 import { navigate, type Params, type View } from "../router";
 import { Sound } from "../sound";
 import { notFoundPage } from "./messagePage";
-
-function algorithmOptions(categories: CategorySummary[], currentPath: string): string {
-	return categories
-		.map(
-			(category) => `
-				<optgroup label="${escapeHtml(category.name)}">
-					${category.algorithms
-						.map((algorithm) => {
-							const path = `/${category.slug}/${algorithm.slug}`;
-							return `<option value="${escapeHtml(path)}" ${path === currentPath ? "selected" : ""}>${escapeHtml(algorithm.name)}</option>`;
-						})
-						.join("")}
-				</optgroup>`,
-		)
-		.join("");
-}
 
 function handleShortcut(event: KeyboardEvent, player: Player): void {
 	const target = event.target as HTMLElement;
@@ -51,19 +36,7 @@ export async function algorithmPage({ category, algorithm }: Params): Promise<Vi
 
 	const element = fromHtml(`
 		<div class="mx-auto max-w-6xl space-y-6 px-4 py-8">
-			<div class="flex flex-wrap items-end justify-between gap-4">
-				<div>
-					<a href="/#${escapeHtml(details.category.slug)}" class="text-sm font-medium text-sky-400 hover:text-sky-300">${escapeHtml(details.category.name)}</a>
-					<h1 class="mt-1 text-3xl font-bold text-white">${escapeHtml(details.name)}</h1>
-					<p class="mt-2 max-w-2xl text-slate-400">${escapeHtml(details.summary)}</p>
-				</div>
-				<label class="flex items-center gap-2 text-sm text-slate-400">
-					Algorithm
-					<select class="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-slate-200" data-slot="switcher">
-						${algorithmOptions(categories, location.pathname)}
-					</select>
-				</label>
-			</div>
+			${algorithmHeaderHtml(details, categories)}
 			<section class="card p-4 sm:p-6">
 				<div data-slot="visualizer"></div>
 				<p class="mt-5 min-h-12 rounded-lg bg-slate-950/60 px-4 py-3 text-center text-slate-200" aria-live="polite" data-slot="message"></p>
@@ -129,7 +102,7 @@ export async function algorithmPage({ category, algorithm }: Params): Promise<Vi
 
 	return {
 		element,
-		title: `${details.name} · Visualizer`,
+		title: algorithmTitle(details.name),
 		destroy: () => {
 			player.destroy();
 			document.removeEventListener("keydown", onKeyDown);

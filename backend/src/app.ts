@@ -13,7 +13,7 @@ export function createApp(repository: AlgorithmRepository, frontendDir?: string)
 	});
 
 	if (frontendDir && existsSync(frontendDir)) {
-		app.use(express.static(frontendDir));
+		app.use(express.static(frontendDir, { extensions: ["html"] }));
 		app.use((req, res, next) => {
 			if (req.method !== "GET") return next();
 			res.sendFile(path.join(frontendDir, "index.html"));

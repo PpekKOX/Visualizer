@@ -9,7 +9,7 @@ npm install        # installs all workspaces
 npm run dev        # backend on :3000 + frontend (Vite) on :5173, /api is proxied
 npm test           # backend + frontend tests
 npm run typecheck
-npm run build      # builds backend/dist and frontend/dist and exports the API to frontend/dist/api
+npm run build      # builds backend/dist and frontend/dist, exports the API and prerenders the pages
 npm start          # production: Express serves the API and the built frontend on :3000 (PORT to override)
 ```
 
@@ -22,8 +22,9 @@ backend/     Express API (TypeScript)
 	src/     Repository (loads JSON), routes, app, server, static API export
 frontend/    Vanilla TypeScript + Vite + Tailwind CSS
 	src/algorithms/ Step generators and visualizers, grouped by category
-	src/components/ Code panel, variables panel, playback controls, algorithm info, live preview
+	src/components/ Code panel, variables panel, playback controls, algorithm header and info, live preview
 	src/pages/      Home, algorithm and message (404 / error) pages
+	prerender.ts    Writes the static pages, sitemap.xml and robots.txt after the build (src/staticPages.ts)
 	src/router.ts   History API router (/:category/:algorithm)
 	src/player.ts   Step playback (play, pause, step, seek, speed)
 ```
@@ -47,16 +48,31 @@ that every exported file is identical to the live API response.
 `frontend/dist` can therefore be deployed in two ways:
 
 - **Static hosting** (e.g. Cloudflare Pages): build command `npm run build`, output directory `frontend/dist`.
-	The host must answer unknown paths with `index.html`, so `/sortingAlgorithms/quicksort` loads the app.
-	Cloudflare Pages does this on its own as long as there is no `404.html`.
-- **Node server**: `npm run build` and `npm start`. Express serves the same API and the built frontend.
+	The host must serve `sortingAlgorithms/quicksort.html` for `/sortingAlgorithms/quicksort` and `404.html` with
+	status 404 for unknown paths. Cloudflare Pages does both on its own.
+- **Node server**: `npm run build` and `npm start`. Express serves the same API, the prerendered pages and the
+	built frontend, and answers unknown paths with `index.html`.
 
 The frontend fetches the same URLs in both cases, so switching between them needs no code changes.
 
-Link previews (Discord, X, …) come from the Open Graph tags in `frontend/index.html`. They point to
-`https://openvisualizer.com/social-preview.png` (`frontend/public/social-preview.png`), a 2560 × 1280 screenshot of
-the home page taken in a 1600 × 800 window. The same image is the repository's social preview on GitHub. Crawlers
-do not run JavaScript, so every page shares this preview.
+### Search engines
+
+Many crawlers do not run JavaScript, so the build ends with `npm run prerender -w frontend` (`frontend/prerender.ts`).
+It reads the exported API and writes:
+
+- `<category>/<slug>.html` for every algorithm: the built `index.html` with the algorithm's own title, description,
+	canonical URL and Open Graph tags, and the page header and explanation in `#outlet`. It uses the same functions as
+	the app (`algorithmHeaderHtml`, `algorithmInfoHtml`), and the router replaces this content when the app starts.
+- `404.html`, so unknown paths get a real 404 status, while the app still shows its "Page not found" page.
+- `sitemap.xml` with every page and `robots.txt`, which points to it.
+
+The site URL is `SITE_URL` in `frontend/prerender.ts`. The home page's title, description and canonical URL are in
+`frontend/index.html`, and `algorithmTitle` (`components/algorithmHeader.ts`) builds the title of every algorithm
+page.
+
+Link previews (Discord, X, …) come from the Open Graph tags. Every page has its own title and description, and all
+of them show `https://openvisualizer.com/social-preview.png` (`frontend/public/social-preview.png`), a 2560 × 1280
+screenshot of the home page taken in a 1600 × 800 window. The same image is the repository's social preview on GitHub.
 
 ### Code splitting
 
@@ -235,7 +251,8 @@ JetBrains Mono for code (`font-mono`). Ligatures are turned off for code, so `==
 
 It is also worth running the code snippets themselves once in each language before adding them.
 
-The URL is `/<category>/<slug>`, e.g. `/sortingAlgorithms/bubblesort`.
+The URL is `/<category>/<slug>`, e.g. `/sortingAlgorithms/bubblesort`. The build prerenders the new page and adds it to
+the sitemap on its own.
 
 ## Adding a new category (e.g. trees)
 

@@ -10,9 +10,13 @@ function row(label: string, value: string): string {
 }
 
 export function createAlgorithmInfo(details: AlgorithmDetails): HTMLElement {
+	return fromHtml(algorithmInfoHtml(details));
+}
+
+export function algorithmInfoHtml(details: AlgorithmDetails): string {
 	const { complexity } = details;
 
-	return fromHtml(`
+	return `
 		<section class="card grid gap-8 p-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
 			<div class="space-y-4">
 				<h2 class="text-xl font-semibold text-white">How ${escapeHtml(details.name)} works</h2>
@@ -30,5 +34,5 @@ export function createAlgorithmInfo(details: AlgorithmDetails): HTMLElement {
 					</tbody>
 				</table>
 			</div>
-		</section>`);
+		</section>`;
 }
